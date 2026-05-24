@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context-Free Languages – 02141 Study Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #f0c060;
+    --green: #3ec97e;
+    --red: #f06070;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --text: #d6dde8;
+    --muted: #6b7891;
+    --heading: #eef2f8;
+    --star: #f0c060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.8;
+    padding: 0 0 100px 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 9px 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  nav .nav-brand {
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-right: 6px;
+    letter-spacing: 0.04em;
+  }
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  nav a:hover { background: var(--surface); border-color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1220 0%, #111827 40%, #0f1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 52px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(79,156,249,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: 'CFG';
+    position: absolute;
+    right: 52px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 9rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: rgba(79,156,249,0.04);
+    letter-spacing: -4px;
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(79,156,249,0.12);
+    border: 1px solid rgba(79,156,249,0.3);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+  }
+  .hero h1 {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .hero .sub {
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  .hero p {
+    max-width: 680px;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-top: 52px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .section h2 {
+    font-size: 1.22rem;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.2px;
+  }
+  .star-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(240,192,96,0.1);
+    border: 1px solid rgba(240,192,96,0.3);
+    color: var(--star);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  /* ── DEFINITION BOX ── */
+  .def-box {
+    background: rgba(79,156,249,0.05);
+    border: 1px solid rgba(79,156,249,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .def-box .def-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  /* ── EXAM BOX ── */
+  .exam-box {
+    background: rgba(240,192,96,0.05);
+    border: 1px solid rgba(240,192,96,0.2);
+    border-left: 3px solid var(--star);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .exam-box .exam-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--star);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── WALKTHROUGH BOX ── */
+  .walkthrough {
+    background: rgba(62,201,126,0.04);
+    border: 1px solid rgba(62,201,126,0.18);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 18px 0;
+  }
+  .walkthrough .wt-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    background: rgba(62,201,126,0.15);
+    border: 1px solid rgba(62,201,126,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+
+  /* ── CODE / GRAMMAR ── */
+  .grammar {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+  .grammar .nt { color: var(--accent); }
+  .grammar .t  { color: var(--green); }
+  .grammar .op { color: var(--muted); }
+  .grammar .ep { color: var(--purple); }
+  .grammar .comment { color: var(--muted); font-style: italic; }
+
+  /* ── PARSE TREE ── */
+  .tree {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ── DERIVATION TABLE ── */
+  .deriv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  .deriv-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .deriv-table tr:last-child td { border-bottom: none; }
+  .deriv-table td:first-child {
+    color: var(--muted);
+    width: 70px;
+    white-space: nowrap;
+  }
+  .deriv-table td:nth-child(2) { color: var(--accent2); }
+  .deriv-table td:nth-child(3) { color: var(--muted); font-size: 12px; }
+  .deriv-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+
+  /* ── TABLE ── */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .info-table th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .info-table tr:last-child td { border-bottom: none; }
+  .info-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── KEY-VALUE PAIRS ── */
+  .kv { display: flex; gap: 10px; margin-bottom: 10px; align-items: baseline; }
+  .kv-key {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    padding: 1px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .kv-val { color: var(--text); font-size: 14px; }
+
+  /* ── TWO-COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── INLINE CHIPS ── */
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    background: rgba(255,255,255,0.07);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent2);
+  }
+  .chip {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px 3px;
+  }
+  .chip-blue  { background: rgba(79,156,249,0.12); color: var(--accent); border: 1px solid rgba(79,156,249,0.25); }
+  .chip-green { background: rgba(62,201,126,0.12); color: var(--green); border: 1px solid rgba(62,201,126,0.25); }
+  .chip-gold  { background: rgba(240,192,96,0.12); color: var(--star); border: 1px solid rgba(240,192,96,0.25); }
+  .chip-red   { background: rgba(240,96,112,0.12); color: var(--red); border: 1px solid rgba(240,96,112,0.25); }
+  .chip-purple{ background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { margin-bottom: 5px; }
+  strong { color: var(--heading); font-weight: 600; }
+  em { color: var(--accent2); font-style: italic; }
+
+  /* ── KEY TAKEAWAYS ── */
+  .takeaway {
+    background: linear-gradient(135deg, rgba(79,156,249,0.06) 0%, rgba(62,201,126,0.04) 100%);
+    border: 1px solid rgba(79,156,249,0.2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .takeaway-num {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgba(79,156,249,0.3);
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .takeaway-text strong { color: var(--accent); }
+
+  /* ── AMBIGUITY DIAGRAM ── */
+  .amb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+  @media (max-width: 600px) { .amb-grid { grid-template-columns: 1fr; } }
+  .amb-card {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .amb-card .amb-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+  .amb-card .amb-title.bad  { color: var(--red); }
+  .amb-card .amb-title.good { color: var(--green); }
+
+  /* ── SCROLL ANIMATION ── */
+  .section { animation: fadeUp 0.4s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section:nth-child(1)  { animation-delay: 0.05s; }
+  .section:nth-child(2)  { animation-delay: 0.10s; }
+  .section:nth-child(3)  { animation-delay: 0.15s; }
+  .section:nth-child(4)  { animation-delay: 0.20s; }
+  .section:nth-child(5)  { animation-delay: 0.25s; }
+  .section:nth-child(6)  { animation-delay: 0.30s; }
+  .section:nth-child(7)  { animation-delay: 0.35s; }
+  .section:nth-child(8)  { animation-delay: 0.40s; }
+  .section:nth-child(9)  { animation-delay: 0.45s; }
+  .section:nth-child(10) { animation-delay: 0.50s; }
+  .section:nth-child(11) { animation-delay: 0.55s; }
+  .section:nth-child(12) { animation-delay: 0.60s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">02141 · CFL1–CFL3</span>
+  <a href="#s1">What is a CFL?</a>
+  <a href="#s2">CFG Definition</a>
+  <a href="#s3">Derivations</a>
+  <a href="#s4">Parse Trees</a>
+  <a href="#s5">Grammars & Data</a>
+  <a href="#s6">Ambiguity</a>
+  <a href="#s7">Precedence</a>
+  <a href="#s8">Associativity</a>
+  <a href="#s9">ASTs</a>
+  <a href="#s10">Lexing</a>
+  <a href="#s11">Parser Generators</a>
+  <a href="#s12">Key Takeaways</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">DTU 02141 · Computer Science Modelling</div>
+  <h1>Context-Free Languages</h1>
+  <div class="sub">CFL1 · CFL2 · CFL3 &nbsp;|&nbsp; Grammars · Parse Trees · Ambiguity · ASTs · Parser Generators</div>
+  <p>
+    Context-Free Languages describe <strong>nested, recursive structure</strong> — the kind you find in arithmetic expressions,
+    programming languages, HTML, XML, and JSON. You will learn to define them with grammars, generate strings via derivations,
+    visualise structure with parse trees, tame ambiguity through precedence and associativity rules,
+    and see how the whole pipeline leads to real-world parser generators.
+  </p>
+</div>
+
+<div class="container">
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 1 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">§ 1</span>
+    <h2>What is a Context-Free Language?</h2>
+  </div>
+
+  <p>Regular expressions describe <em>flat</em> patterns — think of matching a phone number or an email address. But some structures are <strong>nested</strong>: expressions contain sub-expressions, HTML tags wrap other tags, function calls can contain other function calls. Regular expressions cannot handle this. Context-Free Languages can.</p>
+
+  <div class="def-box">
+    <div class="def-label">Intuition</div>
+    A language is <strong>context-free</strong> if it can be generated by rules where you can always expand a placeholder symbol regardless of what surrounds it — the rules never need to "look at the context."
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Real-world examples of CFLs</h3>
+      <ul>
+        <li>Arithmetic expressions: <code>1 + 2 × (3 + 4)</code></li>
+        <li>HTML / XML documents (nested tags)</li>
+        <li>Programming language syntax (if/while/for)</li>
+        <li>JSON data structures</li>
+        <li>Balanced parentheses: <code>((()))</code></li>
+        <li>Equal-length strings: <code>0ⁿ1ⁿ</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What CFLs <span style="color:var(--red)">cannot</span> express</h3>
+      <ul>
+        <li><code>aⁿbⁿcⁿ</code> — three equal counts simultaneously</li>
+        <li>Variable declaration before use (needs full context)</li>
+        <li>Type checking</li>
+        <li>Matching two independent counters</li>
+      </ul>
+      <p style="margin-top:10px; font-size:13px; color:var(--muted)">These require context-sensitive or Turing-complete formalisms.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 2 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">§ 2</span>
+    <h2>Context-Free Grammars — The Formal Definition</h2>
+    <span class="star-badge">⭐ Exam Core</span>
+  </div>
+
+  <p>A <strong>context-free grammar</strong> is a recipe book. You start with a special placeholder symbol and keep substituting symbols according to rules until only real characters remain. There are two kinds of symbols: <em>non-terminals</em> (placeholders that still need expanding) and <em>terminals</em> (the actual characters in the final string).</p>
+
+  <div class="def-box">
+    <div class="def-label">Formal Definition — G = (V, T, P, S)</div>
+    A CFG is a 4-tuple where each component has a precise role:
+  </div>
+
+  <table class="info-table" style="margin-top:0">
+    <thead><tr><th>Component</th><th>Name</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>V</code></td><td>Non-terminals</td><td>Finite set of placeholder symbols</td><td><code>S, E, A, B</code></td></tr>
+      <tr><td><code>T</code></td><td>Terminals</td><td>Finite set of actual characters (disjoint from V)</td><td><code>0, 1, +, ×</code></td></tr>
+      <tr><td><code>P</code></td><td>Productions</td><td>Finite set of rules <code>A → α</code> where A∈V, α∈(V∪T)*</td><td><code>S → 0S1</code></td></tr>
+      <tr><td><code>S</code></td><td>Start symbol</td><td>The non-terminal where every derivation begins (S∈V)</td><td><code>S</code></td></tr>
+    </tbody>
+  </table>
+
+  <p>When a non-terminal has multiple alternatives, they are written with <code>|</code>:</p>
+  <div class="grammar"><span class="nt">A</span> <span class="op">→</span> <span class="t">α₁</span> <span class="op">|</span> <span class="t">α₂</span> <span class="op">|</span> <span class="t">α₃</span>   <span class="comment">// means A can be replaced by any of α₁, α₂, α₃</span></div>
+
+  <p>The <strong>empty string</strong> (zero characters) is written <span class="chip chip-purple">ε</span>.</p>
+
+  <div class="exam-box">
+    <div class="exam-label">⭐ Exam tip — Is it context-free?</div>
+    A grammar is context-free if and only if <strong>every production has exactly one non-terminal on the left-hand side</strong> and nothing else. The rule <code>HHF → HF</code> is NOT context-free because the left side has two non-terminals (<code>HH</code>). This exact test appeared in the 2025 exam (Q1c).
+  </div>
+
+  <div class="card">
+    <h3>Worked Example — Language 0ⁿ1ⁿ</h3>
+    <p>Goal: describe <code>{01, 0011, 000111, …}</code> — equal numbers of 0s then 1s (n ≥ 1).</p>
+    <div class="grammar">
+<span class="nt">S</span> <span class="op">→</span> <span class="t">01</span>  <span class="op">|</span>  <span class="t">0</span><span class="nt">S</span><span class="t">1</span>
+<span class="comment">// S → 01   : base case — one 0 and one 1
+// S → 0S1  : wrap any valid string with another 0…1 pair</span></div>
+    <p>Reading: "A valid string is either <code>01</code>, or a 0, then a valid string, then a 1."</p>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 3 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">§ 3</span>
+    <h2>Derivations — How a Grammar Generates Strings</h2>
+    <span class="star-badge">⭐ Exam Core</span>
+  </div>
+
+  <p>A <strong>derivation</strong> is the step-by-step process of turning the start symbol into a final string by repeatedly applying production rules. Each step replaces one non-terminal with the right-hand side of a chosen rule.</p>
+
+  <div class="kv"><span class="kv-key">⟹</span><span class="kv-val">One derivation step (apply one rule)</span></div>
+  <div class="kv"><span class="kv-key">⟹*</span><span class="kv-val">Zero or more derivation steps</span></div>
+
+  <div class="def-box">
+    <div class="def-label">Language of a Grammar</div>
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:14px; margin-top:4px">
+      L(G) = { w ∈ T<sup>*</sup> | S ⟹<sup>*</sup> w }
+    </div>
+    <p style="margin-top:8px; margin-bottom:0">The set of all terminal strings the start symbol can eventually produce.</p>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Leftmost Derivation</h3>
+      <p>At each step, expand the <strong>leftmost</strong> non-terminal. Both styles produce the same language but different step sequences.</p>
+    </div>
+    <div class="card">
+      <h3>Rightmost Derivation</h3>
+      <p>At each step, expand the <strong>rightmost</strong> non-terminal. Corresponds to a different traversal order of the same parse tree.</p>
+    </div>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Deriving 000111</div>
+    <p style="margin-bottom:12px">Grammar: <code>S → 01 | 0S1</code> &nbsp;·&nbsp; Target: <code>000111</code></p>
+    <table class="deriv-table">
+      <tr><td>Step 0</td><td>S</td><td>Start symbol</td></tr>
+      <tr><td>Step 1</td><td>0S1</td><td>Apply S → 0S1</td></tr>
+      <tr><td>Step 2</td><td>00S11</td><td>Apply S → 0S1 again</td></tr>
+      <tr><td>Step 3</td><td>000111</td><td>Apply S → 01 (base case) ✓</td></tr>
+    </table>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Deriving 0011 (two non-terminals)</div>
+    <p style="margin-bottom:12px">Grammar: <code>S → AB &nbsp; A → 0 | 0A &nbsp; B → 1 | 1B</code> &nbsp;·&nbsp; Target: <code>0011</code></p>
+    <table class="deriv-table">
+      <tr><td>Step 0</td><td>S</td><td>Start</td></tr>
+      <tr><td>Step 1</td><td>AB</td><td>Apply S → AB</td></tr>
+      <tr><td>Step 2</td><td>0AB</td><td>Apply A → 0A (leftmost non-terminal)</td></tr>
+      <tr><td>Step 3</td><td>00B</td><td>Apply A → 0</td></tr>
+      <tr><td>Step 4</td><td>001B</td><td>Apply B → 1B</td></tr>
+      <tr><td>Step 5</td><td>0011</td><td>Apply B → 1 ✓</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 4 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">§ 4</span>
+    <h2>Parse Trees — Visualising a Derivation</h2>
+    <span class="star-badge">⭐ Exam Core</span>
+  </div>
+
+  <p>A <strong>parse tree</strong> is a picture that shows the whole derivation structure at once rather than step-by-step. It reveals the <em>meaning</em> of a string — which sub-expression belongs where, where an operator applies.</p>
+
+  <div class="card">
+    <h3>Rules of a Parse Tree</h3>
+    <ul>
+      <li><strong>Root</strong> = the start symbol <code>S</code></li>
+      <li><strong>Internal nodes</strong> = non-terminals</li>
+      <li><strong>Leaves</strong> = terminals (actual characters) or <code>ε</code></li>
+      <li>Each internal node + its children = exactly <strong>one production rule</strong></li>
+      <li>Reading the leaves <strong>left-to-right</strong> gives the derived string</li>
+    </ul>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Parse Tree for 0011</div>
+    <p style="margin-bottom:12px">Grammar: <code>S → AB &nbsp; A → 0 | 0A &nbsp; B → 1 | 1B</code></p>
+    <div class="tree">        S
+       / \
+      A   B
+     / \ / \
+    0  A 1  B
+       |    |
+       0    1
+    </div>
+    <p>Reading leaves left-to-right: <code>0</code>, <code>0</code>, <code>1</code>, <code>1</code> → <strong>0011</strong> ✓</p>
+    <p style="margin-top:8px; font-size:13px; color:var(--muted)">Each node's children match one production: S→AB, A→0A, A→0, B→1B, B→1.</p>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Parse Tree for 1+1 with E+E grammar</div>
+    <p style="margin-bottom:12px">Grammar: <code>E → N | E+E | E×E | (E) &nbsp; N → 0 | 1 | N0 | N1</code></p>
+    <div class="tree">        E
+      / | \
+     E  +  E
+     |     |
+     N     N
+     |     |
+     1     1
+    </div>
+    <p>The string <code>1+1</code> has a unique parse tree here. But for <code>1+1×1</code> there are <em>two</em> different trees — revealing ambiguity (see §6).</p>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 5 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">§ 5</span>
+    <h2>Grammars and Data — HTML, XML, JSON</h2>
+  </div>
+
+  <p>One of the most practical uses of CFGs is describing <strong>data formats</strong>. HTML, XML, and JSON all have nested structure — exactly what CFGs are designed for. Understanding this connection also shows up in the mandatory assignment.</p>
+
+  <div class="card">
+    <h3>HTML Grammar (fragment)</h3>
+    <div class="grammar">
+<span class="nt">Document</span> <span class="op">→</span> <span class="ep">ε</span>  <span class="op">|</span>  <span class="nt">Element</span> <span class="nt">Document</span>
+<span class="nt">Element</span>  <span class="op">→</span> <span class="t">Text</span>
+          <span class="op">|</span>  <span class="t">&lt;p&gt;</span> <span class="nt">Document</span> <span class="t">&lt;/p&gt;</span>
+          <span class="op">|</span>  <span class="t">&lt;ol&gt;</span> <span class="nt">List</span> <span class="t">&lt;/ol&gt;</span>
+<span class="nt">List</span>     <span class="op">→</span> <span class="ep">ε</span>  <span class="op">|</span>  <span class="t">&lt;li&gt;</span> <span class="nt">Document</span> <span class="t">&lt;/li&gt;</span> <span class="nt">List</span></div>
+  </div>
+
+  <div class="card">
+    <h3>XML Document Type Definitions (DTDs)</h3>
+    <p>A DTD is essentially a grammar written in XML's own notation. Each <code>&lt;!ELEMENT&gt;</code> defines a production — the tag name is the non-terminal; the content model is a regular expression over other non-terminals.</p>
+    <div class="grammar">
+<span class="comment">// DTD for email messages:</span>
+&lt;!DOCTYPE email [
+  &lt;!ELEMENT email (<span class="nt">from</span>, <span class="nt">to</span>+, <span class="nt">bcc</span>*, <span class="nt">subject</span>, <span class="nt">body</span>)&gt;
+  &lt;!ELEMENT from  (<span class="t">#PCDATA</span>)&gt;    <span class="comment">// #PCDATA = plain text (terminal)</span>
+  &lt;!ELEMENT to    (<span class="t">#PCDATA</span>)&gt;
+  &lt;!ELEMENT bcc   (<span class="t">#PCDATA</span>)&gt;
+  &lt;!ELEMENT subject (<span class="t">#PCDATA</span>)&gt;
+  &lt;!ELEMENT body  (<span class="t">#PCDATA</span>)&gt;
+]&gt;</div>
+    <p style="margin-top:10px; font-size:13.5px">In CFG notation: <code>EMAIL → &lt;email&gt; FROM TOP BCCN SUBJECT BODY &lt;/email&gt;</code> &nbsp;·&nbsp; <code>TOP → TO | TO TOP</code> &nbsp;·&nbsp; <code>BCCN → ε | BCC BCCN</code></p>
+  </div>
+
+  <div class="card">
+    <h3>JSON Grammar</h3>
+    <div class="grammar">
+<span class="nt">Obj</span>    <span class="op">→</span> <span class="t">{}</span>  <span class="op">|</span>  <span class="t">{</span><span class="nt">Pairs</span><span class="t">}</span>
+<span class="nt">Pairs</span>  <span class="op">→</span> <span class="nt">Pair</span>  <span class="op">|</span>  <span class="nt">Pair</span><span class="t">,</span><span class="nt">Pairs</span>
+<span class="nt">Pair</span>   <span class="op">→</span> <span class="t">String</span> <span class="t">:</span> <span class="nt">Value</span>
+<span class="nt">Array</span>  <span class="op">→</span> <span class="t">[]</span>  <span class="op">|</span>  <span class="t">[</span><span class="nt">Values</span><span class="t">]</span>
+<span class="nt">Values</span> <span class="op">→</span> <span class="nt">Value</span>  <span class="op">|</span>  <span class="nt">Value</span><span class="t">,</span><span class="nt">Values</span>
+<span class="nt">Value</span>  <span class="op">→</span> <span class="t">String</span> <span class="op">|</span> <span class="t">Number</span> <span class="op">|</span> <span class="nt">Obj</span> <span class="op">|</span> <span class="nt">Array</span> <span class="op">|</span> <span class="t">true</span> <span class="op">|</span> <span class="t">false</span> <span class="op">|</span> <span class="t">null</span></div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 6 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">§ 6</span>
+    <h2>Ambiguity</h2>
+    <span class="star-badge">⭐ Frequently Tested</span>
+  </div>
+
+  <p>A grammar is <strong>ambiguous</strong> if there exists at least one string that can be parsed in <em>two or more different ways</em> — it has two or more distinct parse trees. This matters enormously: an ambiguous grammar means a compiler doesn't know which interpretation of the input is correct.</p>
+
+  <div class="def-box">
+    <div class="def-label">Formal Definition</div>
+    A CFG G is <strong>ambiguous</strong> if there exists a string w ∈ L(G) that has <strong>more than one distinct parse tree</strong> (equivalently, more than one distinct <em>leftmost</em> derivation).
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Proving 1+1×1 is Ambiguous</div>
+    <p style="margin-bottom:12px">Grammar: <code>E → N | E+E | E×E | (E) &nbsp; N → 0 | 1 | N0 | N1</code></p>
+    <p style="margin-bottom:10px">The string <code>1+1×1</code> has <strong>two distinct parse trees</strong>:</p>
+
+    <div class="amb-grid">
+      <div class="amb-card">
+        <div class="amb-title bad">✗ Tree 1 — (+) at root  →  (1+1)×1 = 2</div>
+        <div class="tree" style="font-size:12px">       E
+     / | \
+    E   ×   E
+  / | \     |
+ E  +  E    N
+ |     |    |
+ N     N    1
+ |     |
+ 1     1</div>
+      </div>
+      <div class="amb-card">
+        <div class="amb-title good">Tree 2 — (×) at root  →  1+(1×1) = 2</div>
+        <div class="tree" style="font-size:12px">       E
+     / | \
+    E   +   E
+    |     / | \
+    N    E  ×  E
+    |    |     |
+    1    N     N
+         |     |
+         1     1</div>
+      </div>
+    </div>
+
+    <p style="margin-top:10px">Two different trees, two different meanings. Both produce the <em>same numeric result</em> here by coincidence, but with subtraction: <code>(4−2)−2 = 0</code> ≠ <code>4−(2−2) = 4</code>. Ambiguity causes real bugs.</p>
+  </div>
+
+  <div class="exam-box">
+    <div class="exam-label">⭐ Exam Pattern — Proving Ambiguity</div>
+    <p>To prove a grammar is ambiguous: exhibit <strong>two distinct leftmost derivations</strong> (or two parse trees) for the <em>same</em> string. The 2024 exam asked to prove a grammar ambiguous and then fix it; the 2025 exam asked to identify which productions caused ambiguities. Always give a concrete string as the example.</p>
+  </div>
+
+  <div class="card">
+    <h3>Where Does Ambiguity Come From?</h3>
+    <ul>
+      <li><strong>Missing precedence:</strong> <code>E → E+E | E×E</code> doesn't say whether + or × binds tighter</li>
+      <li><strong>Missing associativity:</strong> <code>E → E+E</code> doesn't say whether <code>a+b+c</code> groups left or right</li>
+      <li><strong>Rule:</strong> Always try to make your grammar unambiguous!</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 7 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">§ 7</span>
+    <h2>Operator Precedence in Grammars</h2>
+    <span class="star-badge">⭐ Frequently Tested</span>
+  </div>
+
+  <p><strong>Precedence</strong> determines which operator "binds tighter." In maths, <code>×</code> has higher precedence than <code>+</code>, so <code>1 + 2 × 3</code> means <code>1 + (2 × 3) = 7</code>, not <code>(1 + 2) × 3 = 9</code>. An ambiguous grammar doesn't encode this. The fix is to <strong>stratify</strong> the grammar into separate precedence levels.</p>
+
+  <div class="def-box">
+    <div class="def-label">The Stratification Trick</div>
+    Introduce one non-terminal per precedence level. <strong>Higher-precedence operators sit lower in the grammar hierarchy</strong> (closer to the leaves of the parse tree). Operators with <em>lower</em> precedence sit at the <em>top</em> levels.
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3 style="color:var(--red)">Before — Ambiguous</h3>
+      <div class="grammar">
+<span class="nt">E</span> <span class="op">→</span> <span class="nt">N</span>
+  <span class="op">|</span> <span class="nt">E</span> <span class="t">+</span> <span class="nt">E</span>
+  <span class="op">|</span> <span class="nt">E</span> <span class="t">×</span> <span class="nt">E</span>
+  <span class="op">|</span> <span class="t">(</span><span class="nt">E</span><span class="t">)</span>
+<span class="nt">N</span> <span class="op">→</span> <span class="t">0</span> <span class="op">|</span> <span class="t">1</span> <span class="op">|</span> <span class="nt">N</span><span class="t">0</span> <span class="op">|</span> <span class="nt">N</span><span class="t">1</span></div>
+      <p style="font-size:13px; color:var(--red); margin-top:8px">+ and × have the same "status" → ambiguous</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--green)">After — Unambiguous</h3>
+      <div class="grammar">
+<span class="nt">E</span> <span class="op">→</span> <span class="nt">T</span>  <span class="op">|</span>  <span class="nt">E</span> <span class="t">+</span> <span class="nt">T</span>    <span class="comment">// + is low prec.</span>
+<span class="nt">T</span> <span class="op">→</span> <span class="nt">F</span>  <span class="op">|</span>  <span class="nt">T</span> <span class="t">×</span> <span class="nt">F</span>    <span class="comment">// × is higher</span>
+<span class="nt">F</span> <span class="op">→</span> <span class="nt">N</span>  <span class="op">|</span>  <span class="t">(</span><span class="nt">E</span><span class="t">)</span>         <span class="comment">// atom / brackets</span>
+<span class="nt">N</span> <span class="op">→</span> <span class="t">0</span>  <span class="op">|</span>  <span class="t">1</span>  <span class="op">|</span>  <span class="nt">N</span><span class="t">0</span>  <span class="op">|</span>  <span class="nt">N</span><span class="t">1</span></div>
+      <p style="font-size:13px; color:var(--green); margin-top:8px">× sits lower (T level) → binds tighter → unambiguous</p>
+    </div>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Parsing 1 + 1 × 1 (leftmost derivation)</div>
+    <p style="margin-bottom:10px">With the unambiguous grammar above:</p>
+    <table class="deriv-table">
+      <tr><td>E</td><td>E + T</td><td>Apply E → E+T</td></tr>
+      <tr><td></td><td>T + T</td><td>Apply E → T (leftmost E)</td></tr>
+      <tr><td></td><td>F + T</td><td>Apply T → F</td></tr>
+      <tr><td></td><td>N + T</td><td>Apply F → N</td></tr>
+      <tr><td></td><td>1 + T</td><td>Apply N → 1</td></tr>
+      <tr><td></td><td>1 + T × F</td><td>Apply T → T×F</td></tr>
+      <tr><td></td><td>1 + F × F</td><td>Apply T → F</td></tr>
+      <tr><td></td><td>1 + 1 × F</td><td>Apply F → N, N → 1</td></tr>
+      <tr><td></td><td>1 + 1 × 1</td><td>Apply F → N, N → 1 ✓</td></tr>
+    </table>
+    <p style="margin-top:10px">The resulting parse tree forces <code>1 + (1 × 1)</code> — only <strong>one</strong> tree is possible. ✓</p>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 8 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">§ 8</span>
+    <h2>Associativity and Left / Right Recursion</h2>
+    <span class="star-badge">⭐ Frequently Tested</span>
+  </div>
+
+  <p><strong>Associativity</strong> determines how to group repeated uses of the same operator. Most operators in programming languages are <em>left-associative</em>. This matters critically for non-associative operators:</p>
+  <p style="font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--accent2); margin-bottom:16px">(4 − 2) − 2 = 0 &nbsp;≠&nbsp; 4 − (2 − 2) = 4</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Left-Associative (most operators)</h3>
+      <p><code>2 − 1 − 1</code> → <code>(2−1)−1 = 0</code></p>
+      <p style="margin-top:10px">Enforced by <span class="chip chip-blue">left recursion</span> — the non-terminal appears on the <strong>left</strong> of the operator:</p>
+      <div class="grammar"><span class="nt">E</span> <span class="op">→</span> <span class="nt">E</span> <span class="t">+</span> <span class="nt">N</span>  <span class="op">|</span>  <span class="nt">N</span></div>
+      <p style="font-size:13px; color:var(--muted)">The right side of + is N (atom), so additions can only chain to the left.</p>
+    </div>
+    <div class="card">
+      <h3>Right-Associative (e.g., exponentiation)</h3>
+      <p><code>2 ^ 3 ^ 4</code> → <code>2 ^ (3 ^ 4)</code></p>
+      <p style="margin-top:10px">Enforced by <span class="chip chip-green">right recursion</span> — the non-terminal appears on the <strong>right</strong>:</p>
+      <div class="grammar"><span class="nt">E</span> <span class="op">→</span> <span class="nt">N</span> <span class="t">+</span> <span class="nt">E</span>  <span class="op">|</span>  <span class="nt">N</span></div>
+      <p style="font-size:13px; color:var(--muted)">Only use this when right-associativity is the intended meaning.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Three Methods to Enforce Left-Associativity</h3>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Left recursion — expand the right-hand side</strong><br>
+        Change <code>E → E+E | N</code> to <code>E → E+N | N</code>.
+        The right operand of + is forced to be an atom N, so addition can only chain leftward.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Right recursion (for right-associativity)</strong><br>
+        Change to <code>E → N+E | N</code>. Only use when you actually want right grouping.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Auxiliary "rest-of-list" non-terminal</strong><br>
+        An expression = a term followed by zero or more <code>+term</code> suffixes:
+        <div class="grammar" style="margin-top:8px">
+<span class="nt">E</span>    <span class="op">→</span> <span class="nt">E'</span> <span class="nt">Rest</span>
+<span class="nt">E'</span>   <span class="op">→</span> <span class="nt">N</span>  <span class="op">|</span>  <span class="t">(</span><span class="nt">E</span><span class="t">)</span>
+<span class="nt">Rest</span> <span class="op">→</span> <span class="ep">ε</span>  <span class="op">|</span>  <span class="t">+</span> <span class="nt">E'</span> <span class="nt">Rest</span></div>
+        Clean and right-recursive — avoids problems with some parsers.
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-box">
+    <div class="exam-label">⭐ Left Recursion vs. Parsing Algorithms</div>
+    Left-recursive grammars are natural and correct, but naive top-down/recursive-descent parsers <strong>loop forever</strong> on left recursion. Modern parser generators handle this automatically when you declare associativity separately. This is why the course introduces parser generators — see §11.
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 9 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <span class="section-num">§ 9</span>
+    <h2>Abstract Syntax Trees (ASTs)</h2>
+  </div>
+
+  <p>After parsing, the full parse tree contains structural "noise" — parentheses, keywords, and non-terminals that were only there to resolve ambiguity. We want only the <strong>semantically meaningful</strong> information. That's the AST.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>Concrete Syntax</h3>
+      <p>The original string + full parse tree. Contains all syntactic details including punctuation and structural non-terminals.</p>
+    </div>
+    <div class="card">
+      <h3>Abstract Syntax (AST)</h3>
+      <p>A cleaned-up tree. Internal nodes = operations. Leaves = values. Parentheses, commas, structural tokens <strong>discarded</strong>. The tree structure encodes precedence and associativity.</p>
+    </div>
+  </div>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Concrete → Abstract for 1 + 1 × 1</div>
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:6px">Concrete parse tree:</p>
+        <div class="tree" style="font-size:12px">        E
+       / \  \
+      E   +   T
+      |      /|\
+      T     T × F
+      |     |   |
+      F     F   1
+      |     |
+      N     N
+      |     |
+      1     1</div>
+      </div>
+      <div>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:6px">Abstract syntax tree:</p>
+        <div class="tree" style="font-size:12px">      +
+     / \
+    1   ×
+       / \
+      1   1</div>
+        <p style="font-size:13px; margin-top:8px">E, T, F non-terminals gone. Structure alone encodes precedence: × is computed before +.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>ASTs in Object-Oriented Code</h3>
+    <p>Each grammar rule typically maps to a class. For our arithmetic grammar:</p>
+    <div class="grammar">
+<span class="comment">// One abstract class per grammar non-terminal</span>
+public abstract class ArithExpr { }
+public class NumExpr  extends ArithExpr { int value; }
+public class PlusExpr extends ArithExpr { ArithExpr left, right; }
+public class MultExpr extends ArithExpr { ArithExpr left, right; }
+
+<span class="comment">// 1 + 1 × 1 in abstract syntax:</span>
+ArithExpr e = new PlusExpr(
+    new NumExpr(1),
+    new MultExpr(new NumExpr(1), new NumExpr(1))
+);</div>
+    <p style="margin-top:10px; font-size:13.5px">This object structure is exactly what the mandatory assignment's parser must produce — subsequent analysis stages (interpreters, verifiers, code generators) all consume this AST.</p>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 10 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">§ 10</span>
+    <h2>Lexing: Characters → Tokens</h2>
+  </div>
+
+  <p>Before the parser sees anything, a <strong>lexer</strong> groups the raw character stream into meaningful units called <em>tokens</em>. Whitespace is typically discarded. This is the first stage of the compiler pipeline.</p>
+
+  <div class="walkthrough">
+    <div class="wt-label">▶ Walkthrough — Lexing a program fragment</div>
+    <p style="margin-bottom:10px">Input characters:</p>
+    <div class="grammar" style="margin-bottom:12px">if (x == 42) { y = "42 is the answer"; }</div>
+    <p style="margin-bottom:8px">Output token stream:</p>
+    <div class="grammar">
+<span class="chip chip-blue">IF</span>  <span class="chip chip-blue">LPAREN</span>  <span class="chip chip-green">ID("x")</span>  <span class="chip chip-gold">EQ</span>  <span class="chip chip-green">NUM(42)</span>  <span class="chip chip-blue">RPAREN</span>
+<span class="chip chip-blue">LBRACE</span>  <span class="chip chip-green">ID("y")</span>  <span class="chip chip-gold">ASSIGN</span>  <span class="chip chip-green">STRING("42 is the answer")</span>
+<span class="chip chip-blue">SEMICOLON</span>  <span class="chip chip-blue">RBRACE</span></div>
+    <p style="margin-top:10px; font-size:13.5px">Each token has a <strong>type</strong> (like IF, ID, NUM) and optionally a <strong>value</strong> (like the string "x" or number 42). Whitespace was discarded.</p>
+  </div>
+
+  <div class="card">
+    <h3>Tokens Are Defined With Regular Expressions</h3>
+    <table class="info-table" style="margin-top:8px">
+      <thead><tr><th>Token</th><th>Regular Expression</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>NUM</code></td><td><code>[0-9]+</code></td><td>One or more digits</td></tr>
+        <tr><td><code>ID</code></td><td><code>[A-Za-z][A-Za-z0-9]*</code></td><td>Letter followed by letters/digits</td></tr>
+        <tr><td><code>IF</code></td><td><code>if</code></td><td>Keyword — matched literally</td></tr>
+        <tr><td><code>WHITESPACE</code></td><td><code>[ \t\r\n]+</code></td><td>Matched and <em>discarded</em></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:8px; font-size:13.5px">The <code>*</code> and <code>+</code> operators are interpreted <strong>greedily</strong>: the lexer always takes the longest possible match. The lexer exposes a <code>lex()</code> function that returns the next token; the parser calls this repeatedly.</p>
+  </div>
+
+  <div class="def-box">
+    <div class="def-label">The Full Pipeline</div>
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:13px; line-height:2.2; margin-top:6px">
+      Source text (characters)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;&nbsp;<span style="color:var(--accent)">LEXER</span> &nbsp;— uses regular expressions<br>
+      Token stream<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;&nbsp;<span style="color:var(--green)">PARSER</span> &nbsp;— uses context-free grammar<br>
+      Parse tree / AST<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;&nbsp;<span style="color:var(--star)">ANALYSIS</span> &nbsp;— interpreter, verifier, code generator
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 11 -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <span class="section-num">§ 11</span>
+    <h2>Parser Generators</h2>
+  </div>
+
+  <p>Writing a parser by hand is difficult: simple algorithms only work on restricted grammars, and more powerful algorithms are complex and error-prone. A <strong>parser generator</strong> takes your grammar as input and automatically produces a working parser program.</p>
+
+  <div class="def-box">
+    <div class="def-label">What a Parser Generator Does</div>
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:13px; line-height:2.2; margin-top:6px">
+      Your grammar file (CFG rules + precedence declarations)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;&nbsp;<span style="color:var(--accent)">PARSER GENERATOR</span> &nbsp;(e.g., ANTLR, Happy, Yacc)<br>
+      A parser program (Java / Haskell / C / ...)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;↓ &nbsp;&nbsp;given input text<br>
+      Parse tree / AST
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>What You Declare</h3>
+      <ul>
+        <li>Grammar productions in BNF-like notation</li>
+        <li>Operator <strong>precedence</strong> levels</li>
+        <li>Operator <strong>associativity</strong> (left/right)</li>
+        <li>Semantic actions — code to run when a rule matches (builds AST nodes)</li>
+        <li>Token types for the lexer</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What the Tool Handles</h3>
+      <ul>
+        <li>Converting your grammar to a parsing algorithm</li>
+        <li>Resolving left recursion issues</li>
+        <li>Conflict detection (shift/reduce conflicts)</li>
+        <li>Efficient lookup tables</li>
+        <li>Error messages for malformed input</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Mandatory Assignment Framework</h3>
+    <p>The course's mandatory assignment builds a real compiler toolchain. The parser is the entry point that all later stages depend on:</p>
+    <div class="grammar" style="font-size:12.5px; line-height:2">
+Program text
+  → [<span class="nt">Parser</span> = lexer + CFG]  →  AST
+  → [<span class="nt">Compiler</span>]              →  Program Graph
+  → [<span class="nt">Interpreter / Verifier / Analyser</span>]  →  Results</div>
+    <p style="margin-top:10px; font-size:13.5px">PA01 builds the parser and pretty-printer. PA02–PA08 build analysis tools (interpreter, security analyser, model checker, sign analyser) that all consume the AST your parser produces. This is why mastering CFGs is foundational for the whole course.</p>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────── -->
+<!-- SECTION 12 — KEY TAKEAWAYS -->
+<!-- ──────────────────────────────────────────── -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <span class="section-num">§ 12</span>
+    <h2>Key Takeaways</h2>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-num">1</div>
+    <div class="takeaway-text">
+      <strong>A CFG = four ingredients: V, T, P, S.</strong> Every production has exactly <em>one non-terminal on the left-hand side</em> — that's what makes it context-free. The start symbol S kicks off every derivation. The language L(G) is all terminal strings reachable from S.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-num">2</div>
+    <div class="takeaway-text">
+      <strong>Derivations generate strings; parse trees picture derivations.</strong> The leaves of a parse tree read left-to-right spell out the derived string. Every internal node + its children corresponds to exactly one production rule. Both leftmost and rightmost derivations produce the same language.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-num">3</div>
+    <div class="takeaway-text">
+      <strong>Ambiguity = two distinct parse trees for one string.</strong> Prove it by exhibiting two different leftmost derivations. Fix it with <em>grammar stratification</em> (separate non-terminals per precedence level: E → T → F) and left/right recursion for associativity. Always try to make grammars unambiguous.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-num">4</div>
+    <div class="takeaway-text">
+      <strong>Left recursion enforces left-associativity; right recursion enforces right-associativity.</strong> <code>E → E+N | N</code> forces <code>(a+b)+c</code>. <code>E → N+E | N</code> forces <code>a+(b+c)</code>. Most arithmetic operators are left-associative. Left recursion can cause infinite loops in naive parsers — use parser generators to handle it cleanly.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-num">5</div>
+    <div class="takeaway-text">
+      <strong>The real-world pipeline is: text → lexer (regex) → tokens → parser (CFG) → AST.</strong> The AST strips all structural noise and keeps only semantic content. Parser generators automate building the parser and let you declare precedence/associativity directly. This pipeline is the backbone of the entire mandatory assignment.
+    </div>
+  </div>
+
+  <div class="exam-box" style="margin-top:24px">
+    <div class="exam-label">⭐ Most Common Exam Question Types (2018–2025)</div>
+    <ul style="margin-top:8px">
+      <li><strong>Write a CFG</strong> for a given language — know the patterns for 0ⁿ1ⁿ, palindromes, lists, nested structures.</li>
+      <li><strong>Give a derivation</strong> of a specific string — show each ⟹ step, state leftmost/rightmost.</li>
+      <li><strong>Draw a parse tree</strong> — root = start symbol, leaves = terminals, reading leaves gives the string.</li>
+      <li><strong>Prove ambiguity</strong> — show two distinct leftmost derivations or parse trees for the same string.</li>
+      <li><strong>Fix ambiguity</strong> — stratify grammar into E/T/F levels; use left recursion for left-associativity.</li>
+      <li><strong>Is this grammar context-free?</strong> — check that every production has exactly one non-terminal on the left.</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
