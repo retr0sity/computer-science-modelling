@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regular Languages – 02141 Study Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #f0c060;
+    --green: #3ec97e;
+    --red: #f06070;
+    --text: #d6dde8;
+    --muted: #6b7891;
+    --heading: #eef2f8;
+    --star: #f0c060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 0 0 80px 0;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  nav span { color: var(--muted); font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  nav a:hover { background: var(--surface); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #111827 0%, #1a2035 60%, #111827 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 48px 36px;
+  }
+  .hero h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .hero .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .hero .summary {
+    max-width: 780px;
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 920px; margin: 0 auto; padding: 0 28px; }
+
+  /* SECTIONS */
+  section {
+    border-left: 3px solid var(--border);
+    margin: 40px 0;
+    padding-left: 20px;
+  }
+  section.active-section { border-left-color: var(--accent); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-top: 8px;
+  }
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.3px;
+  }
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 26px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 18px 0 8px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  p { margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  ul, ol { padding-left: 22px; margin-bottom: 12px; }
+  li { margin-bottom: 5px; }
+  li::marker { color: var(--accent); }
+
+  /* STAR BADGE */
+  .star { color: var(--star); font-size: 1.1em; }
+  .exam-flag {
+    display: inline-block;
+    background: rgba(240,192,96,0.12);
+    border: 1px solid rgba(240,192,96,0.35);
+    color: var(--star);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .card.definition { border-left: 3px solid var(--accent); }
+  .card.example { border-left: 3px solid var(--green); }
+  .card.walkthrough { border-left: 3px solid var(--accent2); }
+  .card.warning { border-left: 3px solid var(--red); }
+  .card.takeaway { border-left: 3px solid var(--star); background: rgba(240,192,96,0.05); }
+
+  .card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--muted);
+  }
+  .card.definition .card-label { color: var(--accent); }
+  .card.example .card-label { color: var(--green); }
+  .card.walkthrough .card-label { color: var(--accent2); }
+  .card.warning .card-label { color: var(--red); }
+  .card.takeaway .card-label { color: var(--star); }
+
+  /* CODE / MONO */
+  code, pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  code {
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: #80b8ff;
+  }
+  pre {
+    background: #0d1018;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: #b8c8e8;
+    line-height: 1.6;
+    white-space: pre;
+  }
+
+  /* AUTOMATA DIAGRAMS */
+  .automaton {
+    background: #0d1018;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #b8c8e8;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+
+  /* TABLE */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  th {
+    background: var(--surface);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(37,42,56,0.7);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(79,156,249,0.04); }
+
+  /* STEPS */
+  .steps { list-style: none; padding-left: 0; }
+  .steps li {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    background: var(--accent);
+    color: #0f1117;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+
+  /* HIGHLIGHT */
+  .hl { color: var(--accent2); font-weight: 600; }
+  .hl-g { color: var(--green); font-weight: 600; }
+  .hl-r { color: var(--red); }
+
+  /* DIVIDER */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 36px 0;
+  }
+
+  /* KEY TAKEAWAYS */
+  .takeaway-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+    margin-top: 14px;
+  }
+  .tk-item {
+    background: rgba(240,192,96,0.06);
+    border: 1px solid rgba(240,192,96,0.25);
+    border-radius: 7px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tk-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--star);
+    color: #0f1117;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 1px;
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: white; color: black; }
+    nav { display: none; }
+    .hero { background: #f5f5f5; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span>02141 Regular Languages</span>
+  <a href="#rl1">RL1 DFA</a>
+  <a href="#rl2">RL2 NFA</a>
+  <a href="#rl3">RL3 RegEx</a>
+  <a href="#rl4">RL4 Minimization &amp; Pumping</a>
+  <a href="#rl5">RL5 Beyond Regular</a>
+  <a href="#takeaways">Key Takeaways</a>
+</nav>
+
+<div class="hero">
+  <div>
+    <div class="sub">02141 Computer Science Modelling · DTU · Regular Languages RL1–RL5</div>
+    <h1>Regular Languages – Complete Study Notes</h1>
+    <p class="summary">
+      These notes cover the full Regular Languages strand of 02141 from the very beginning —
+      no prior knowledge assumed. Every concept is explained in plain English first,
+      then given a formal definition, then walked through with a step-by-step example.
+      Topics marked <span class="star">⭐</span> <span style="font-size:12px;color:var(--star);">EXAM</span>
+      appear frequently across the 2018–2025 past papers and deserve extra attention.
+    </p>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ======================== RL1 ======================== -->
+<section id="rl1">
+  <div class="section-header">
+    <span class="section-tag">RL1</span>
+    <h2>Deterministic Finite Automata (DFA)</h2>
+  </div>
+
+  <!-- Motivation -->
+  <h3>🌍 What Is This All About?</h3>
+  <p>
+    Imagine you need to teach a computer to recognise valid email addresses, or to check
+    whether someone typed a correct phone number. The computer needs a <em>model</em> —
+    a precise description of "what counts as valid". That model is called a <strong>formal language</strong>,
+    and the machine that checks it is called a <strong>finite automaton</strong>.
+  </p>
+  <p>
+    The key insight of this whole unit is: <em>the same collection of strings can be described
+    in at least three equivalent ways</em> — by a DFA, by an NFA, or by a regular expression.
+    All three give you <strong>regular languages</strong>.
+  </p>
+
+  <!-- Alphabets & Languages -->
+  <h3>📖 Alphabets, Strings, and Languages <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+
+  <div class="card definition">
+    <div class="card-label">Definition</div>
+    <ul>
+      <li><strong>Alphabet (Σ)</strong> — a finite, non-empty set of symbols, e.g. <code>Σ = {0, 1}</code> or <code>Σ = {a, b, c}</code>.</li>
+      <li><strong>String (word)</strong> — a finite sequence of symbols from Σ. The <em>empty string</em> is written <code>ε</code> (length 0).</li>
+      <li><strong>|w|</strong> — the length of string w. Example: <code>|aba| = 3</code>, <code>|ε| = 0</code>.</li>
+      <li><strong>Σ*</strong> — the set of <em>all</em> finite strings over Σ, including ε.</li>
+      <li><strong>Language L</strong> — any subset of Σ*. A language is simply a collection of strings we decide to call "valid".</li>
+    </ul>
+  </div>
+
+  <div class="card example">
+    <div class="card-label">Plain English Example</div>
+    <p>Σ = {0, 1}. Then Σ* = {ε, 0, 1, 00, 01, 10, 11, 000, …} — infinitely many strings.</p>
+    <p>The language <em>"all strings containing an odd number of 1s"</em> is a subset of Σ*. It includes <code>1, 01, 10, 001, 100, …</code> but not <code>ε, 0, 11, 0110, …</code></p>
+  </div>
+
+  <!-- What is a DFA -->
+  <h3>🤖 What Is a Finite Automaton? <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    Think of a DFA as a very simple machine — like a vending machine. It has a finite set of
+    <strong>states</strong> (like the machine's current "mode": waiting for coins, ready to dispense, etc.).
+    It reads one symbol at a time, and each symbol causes it to <strong>jump to a new state</strong>.
+    At the end, if it is in a special <strong>"accept" state</strong>, it says "yes, valid!" Otherwise "no".
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">Formal Definition — DFA</div>
+    <p>A DFA is a 5-tuple <code>A = (Q, Σ, δ, q₀, F)</code> where:</p>
+    <ul>
+      <li><strong>Q</strong> — finite set of states</li>
+      <li><strong>Σ</strong> — finite input alphabet</li>
+      <li><strong>δ: Q × Σ → Q</strong> — transition function: given current state and current symbol, returns the next state</li>
+      <li><strong>q₀ ∈ Q</strong> — initial state (where you start)</li>
+      <li><strong>F ⊆ Q</strong> — set of final/accepting states</li>
+    </ul>
+    <p>Key constraint: δ is a <em>total function</em> — every state has exactly one outgoing transition per symbol (no gaps, no choices).</p>
+  </div>
+
+  <h3>🗺️ How to Draw a DFA — Transition Diagrams</h3>
+  <p>DFAs are drawn as directed graphs:</p>
+  <ul>
+    <li>Circles = states</li>
+    <li>Arrow into the initial state (no label)</li>
+    <li>Double circle = accepting/final state</li>
+    <li>Labelled arrows = transitions</li>
+  </ul>
+
+  <div class="automaton">
+EXAMPLE: DFA for strings over {0,1} ending in '0'
+
+         0           0
+    →  [ s0 ]  ←————————  [ s1 ]
+         |                   |
+    1    ↓         1          ↑
+         [ s1 ]  ————————→
+
+  * s0 is the initial AND accepting state (double circle)
+  * s1 is a non-accepting state
+
+  Notation:  →[ q ]  means initial state
+             (( q )) means accepting state
+  </div>
+
+  <h3>📋 Transition Tables</h3>
+  <p>
+    The same DFA can be written as a table. Rows = states, columns = symbols, cells = next state.
+    The initial state is marked <code>→</code> and accepting states with <code>*</code>.
+  </p>
+
+  <table>
+    <tr><th>State</th><th>0</th><th>1</th></tr>
+    <tr><td><code>→* s0</code></td><td><code>s0</code></td><td><code>s1</code></td></tr>
+    <tr><td><code>s1</code></td><td><code>s0</code></td><td><code>s1</code></td></tr>
+  </table>
+
+  <h3>🧮 How the DFA Processes a String <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    The extended transition function <code>δ*</code> tells you where you end up after reading an entire string:
+  </p>
+  <div class="card definition">
+    <div class="card-label">Extended Transition Function δ*</div>
+    <ul>
+      <li><code>δ*(q, ε) = q</code> &nbsp;— reading nothing leaves you in the same state</li>
+      <li><code>δ*(q, aw) = δ*(δ(q, a), w)</code> &nbsp;— read the first symbol, move to new state, then continue</li>
+    </ul>
+    <p>The <strong>language of DFA A</strong> is: <code>L(A) = { w | δ*(q₀, w) ∈ F }</code></p>
+  </div>
+
+  <!-- WALKED EXAMPLE -->
+  <h3>🔍 Step-by-Step Walkthrough — "Strings Ending in 0" <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example</div>
+    <p><strong>DFA</strong> with Σ = {0,1}, states = {s0, s1}, start = s0, accepting = {s0}.</p>
+    <p>Transitions: δ(s0,0)=s0, δ(s0,1)=s1, δ(s1,0)=s0, δ(s1,1)=s1</p>
+    <p><strong>Trace the string w = "1010":</strong></p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Start in <code>s0</code>. Read '1'. δ(s0, 1) = <span class="hl">s1</span>.</span></li>
+      <li><span class="step-num">2</span><span class="step-body">In <code>s1</code>. Read '0'. δ(s1, 0) = <span class="hl">s0</span>.</span></li>
+      <li><span class="step-num">3</span><span class="step-body">In <code>s0</code>. Read '1'. δ(s0, 1) = <span class="hl">s1</span>.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">In <code>s1</code>. Read '0'. δ(s1, 0) = <span class="hl">s0</span>.</span></li>
+      <li><span class="step-num">5</span><span class="step-body">String finished. Final state = <code>s0</code> ∈ F. <span class="hl-g">✓ ACCEPTED</span> (the string ends in 0 ✓).</span></li>
+    </ol>
+    <p><strong>Trace w = "101":</strong></p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Start s0 → read '1' → s1</span></li>
+      <li><span class="step-num">2</span><span class="step-body">s1 → read '0' → s0</span></li>
+      <li><span class="step-num">3</span><span class="step-body">s0 → read '1' → s1. End. s1 ∉ F → <span class="hl-r">✗ REJECTED</span> (string ends in 1).</span></li>
+    </ol>
+  </div>
+
+  <h3>🔧 Decision Problems for Regular Languages</h3>
+  <ul>
+    <li><strong>Membership problem:</strong> Given L and w, does w ∈ L? → Run the DFA, check if you end in an accepting state.</li>
+    <li><strong>Emptiness problem:</strong> Is L = ∅? → Check if any accepting state is reachable from q₀.</li>
+    <li><strong>Equivalence problem:</strong> Do two automata accept the same language? → Use the <em>Equality Game / Table-Filling algorithm</em>.</li>
+  </ul>
+
+  <h3>🔗 Closure Properties of Regular Languages</h3>
+  <div class="card definition">
+    <div class="card-label">Closure Properties</div>
+    <p>If L₁ and L₂ are regular languages, then so are:</p>
+    <ul>
+      <li><strong>Union:</strong> L₁ ∪ L₂</li>
+      <li><strong>Intersection:</strong> L₁ ∩ L₂</li>
+      <li><strong>Complement:</strong> Σ* \ L₁</li>
+      <li><strong>Difference:</strong> L₁ \ L₂</li>
+      <li><strong>Concatenation:</strong> L₁ · L₂ = {xy | x ∈ L₁, y ∈ L₂}</li>
+      <li><strong>Kleene star:</strong> L₁* = {ε} ∪ L₁ ∪ L₁L₁ ∪ …</li>
+      <li><strong>Reversal:</strong> L₁ᴿ = {wᴿ | w ∈ L₁}</li>
+    </ul>
+  </div>
+
+  <h3>🎮 Equality Game Algorithm (DFA Equivalence) <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <div class="card walkthrough">
+    <div class="card-label">Algorithm</div>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body"><strong>Group states:</strong> Put all accepting states from both DFAs in one group; all non-accepting states in another.</span></li>
+      <li><span class="step-num">2</span><span class="step-body"><strong>Challenge:</strong> A state s in group G challenges s' in G: "On symbol x, I go to group G' — can you?" If s' cannot, split G.</span></li>
+      <li><span class="step-num">3</span><span class="step-body"><strong>Repeat</strong> challenges until no split is possible.</span></li>
+      <li><span class="step-num">4</span><span class="step-body"><strong>Verdict:</strong> DFAs are equivalent iff their initial states are in the same group at the end.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================== RL2 ======================== -->
+<section id="rl2">
+  <div class="section-header">
+    <span class="section-tag">RL2</span>
+    <h2>Non-Deterministic Finite Automata (NFA)</h2>
+  </div>
+
+  <h3>❓ Why Non-Determinism?</h3>
+  <p>
+    A DFA must have <em>exactly one</em> transition per state per symbol — very rigid.
+    An <strong>NFA</strong> relaxes this: from any state you can have <em>zero, one, or multiple</em>
+    transitions on the same symbol. The NFA "magically" explores all possibilities at once —
+    it accepts a string if <em>at least one</em> of those explorations leads to an accepting state.
+  </p>
+  <p>
+    Non-determinism doesn't add power (NFA and DFA recognise exactly the same languages),
+    but it makes it <em>much easier to design automata</em> for complex patterns.
+  </p>
+
+  <div class="card example">
+    <div class="card-label">Motivating Example</div>
+    <p>Language: all strings over {0,1} ending in <code>01</code>.</p>
+    <p>The NFA below is compact — it "guesses" when it's in the last two characters:</p>
+    <div class="automaton">
+NFA for strings ending in 01:
+
+  →[q0] ---0--→ [q1] ---1--→ ((q2))
+    ↑___________↑
+    0,1 (self-loop)
+
+  q0: keep reading anything
+  q1: just read the '0' before the final '1'
+  q2: accepting — just read '01'
+    </div>
+    <p>The DFA equivalent would need 4 states (tracking the last two symbols). NFA is simpler to design!</p>
+  </div>
+
+  <h3>📐 Formal Definition of NFA <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+
+  <div class="card definition">
+    <div class="card-label">Definition</div>
+    <p>An NFA is a 5-tuple <code>A = (Q, Σ, δ, q₀, F)</code> where:</p>
+    <ul>
+      <li><strong>Q, Σ, q₀, F</strong> — same as DFA</li>
+      <li><strong>δ: Q × Σ → P(Q)</strong> — transition function returns a <em>set</em> of states (possibly empty)</li>
+    </ul>
+    <p>The NFA accepts w if <strong>at least one</strong> computation path reaches an accepting state.</p>
+    <p>Extended function: <code>δ*(q, ε) = {q}</code> and <code>δ*(q, aw) = ⋃ δ*(p, w)</code> for p ∈ δ(q, a).</p>
+    <p>Language: <code>L(A) = { w | δ*(q₀, w) ∩ F ≠ ∅ }</code></p>
+  </div>
+
+  <h3>🔄 Subset Construction: NFA → DFA <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    Every NFA can be converted to a DFA using the <strong>subset construction</strong>.
+    Each DFA state corresponds to a <em>set</em> of NFA states — tracking all possible places
+    the NFA could be at once.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">Subset Construction Algorithm</div>
+    <p>Given NFA <code>(Q_N, Σ, δ_N, q₀, F_N)</code>, build DFA <code>(Q_D, Σ, δ_D, {q₀}, F_D)</code>:</p>
+    <ul>
+      <li><strong>Q_D</strong> = all subsets of Q_N (the power set P(Q_N)) — potentially 2ⁿ states</li>
+      <li><strong>Start state</strong> = <code>{q₀}</code></li>
+      <li><strong>Accepting states F_D</strong> = all subsets containing at least one state from F_N</li>
+      <li><strong>Transitions:</strong> <code>δ_D({q₁,…,qₖ}, a) = δ_N(q₁,a) ∪ … ∪ δ_N(qₖ,a)</code></li>
+    </ul>
+    <p>In practice, only the <em>reachable</em> subsets matter — often far fewer than 2ⁿ.</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Step-by-Step Walkthrough — NFA to DFA Subset Construction</div>
+    <p><strong>Given NFA</strong> with Q = {p, q, r}, Σ = {0, 1}, start = p, accepting = {r}:</p>
+    <table>
+      <tr><th>State</th><th>0</th><th>1</th></tr>
+      <tr><td><code>→ p</code></td><td><code>{p,q}</code></td><td><code>{p}</code></td></tr>
+      <tr><td><code>q</code></td><td><code>{r}</code></td><td><code>{r}</code></td></tr>
+      <tr><td><code>* r</code></td><td><code>∅</code></td><td><code>∅</code></td></tr>
+    </table>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body"><strong>Start:</strong> DFA start state = {p}.</span></li>
+      <li><span class="step-num">2</span><span class="step-body"><strong>δ_D({p}, 0)</strong> = δ_N(p,0) = <span class="hl">{p,q}</span> → new DFA state.</span></li>
+      <li><span class="step-num">3</span><span class="step-body"><strong>δ_D({p}, 1)</strong> = δ_N(p,1) = <span class="hl">{p}</span> → already known.</span></li>
+      <li><span class="step-num">4</span><span class="step-body"><strong>δ_D({p,q}, 0)</strong> = δ_N(p,0) ∪ δ_N(q,0) = {p,q} ∪ {r} = <span class="hl">{p,q,r}</span> → new state.</span></li>
+      <li><span class="step-num">5</span><span class="step-body"><strong>δ_D({p,q}, 1)</strong> = δ_N(p,1) ∪ δ_N(q,1) = {p} ∪ {r} = <span class="hl">{p,r}</span> → new state.</span></li>
+      <li><span class="step-num">6</span><span class="step-body">Continue expanding all new states until no new states appear.</span></li>
+      <li><span class="step-num">7</span><span class="step-body"><strong>Accepting states:</strong> Any DFA state containing 'r' is accepting, i.e. {p,q,r}, {p,r}, {r}.</span></li>
+    </ol>
+  </div>
+
+  <h3>ε-NFAs (NFA with Epsilon Moves)</h3>
+  <p>
+    An <strong>ε-NFA</strong> allows <em>free/silent transitions</em> — the automaton can jump from one
+    state to another without consuming any input symbol. This makes composition of automata
+    (e.g., union) trivially easy.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">ε-Closure</div>
+    <p><code>ECLOSE(q)</code> = the set of all states reachable from q by following zero or more ε-transitions.</p>
+    <p>Formally: q ∈ ECLOSE(q), and if p ∈ ECLOSE(q) and r ∈ δ(p,ε), then r ∈ ECLOSE(q).</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — ε-Closure and ε-NFA to DFA</div>
+    <p>ε-NFA over {a, b, c}:</p>
+    <table>
+      <tr><th>State</th><th>ε</th><th>a</th><th>b</th><th>c</th></tr>
+      <tr><td><code>→ p</code></td><td><code>∅</code></td><td><code>{p}</code></td><td><code>{q}</code></td><td><code>{r}</code></td></tr>
+      <tr><td><code>q</code></td><td><code>{p}</code></td><td><code>{q}</code></td><td><code>{r}</code></td><td><code>∅</code></td></tr>
+      <tr><td><code>* r</code></td><td><code>{q}</code></td><td><code>{r}</code></td><td><code>∅</code></td><td><code>{p}</code></td></tr>
+    </table>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Compute ε-closures: ECLOSE(p)={p}, ECLOSE(q)={q,p} (q has ε to p), ECLOSE(r)={r,q,p} (r→q→p via ε).</span></li>
+      <li><span class="step-num">2</span><span class="step-body">DFA start = ECLOSE(p) = <span class="hl">{p}</span>.</span></li>
+      <li><span class="step-num">3</span><span class="step-body">δ_D({p}, a) = ECLOSE(δ(p,a)) = ECLOSE({p}) = <span class="hl">{p}</span>.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">δ_D({p}, b) = ECLOSE(δ(p,b)) = ECLOSE({q}) = <span class="hl">{p,q}</span>.</span></li>
+      <li><span class="step-num">5</span><span class="step-body">δ_D({p}, c) = ECLOSE(δ(p,c)) = ECLOSE({r}) = <span class="hl">{p,q,r}</span>.</span></li>
+      <li><span class="step-num">6</span><span class="step-body">{p,q,r} contains r (accepting), so it is an accepting DFA state. Continue until stable.</span></li>
+    </ol>
+  </div>
+
+  <h3>🗺️ The Big Picture — Equivalences</h3>
+  <div class="automaton">
+  DFA  ←——subset construction——  NFA  ←——trivial embedding——  ε-NFA
+   |                                                              |
+   ↓                                                              ↓
+  Regular Expressions  ←————————————————————————————————→  same class!
+
+  All four formalisms describe exactly the SAME class: Regular Languages.
+  </div>
+
+  <p>Key theorem: <strong>L is accepted by a DFA ⟺ L is accepted by an NFA ⟺ L is accepted by an ε-NFA ⟺ L is described by a regular expression.</strong></p>
+</section>
+
+<!-- ======================== RL3 ======================== -->
+<section id="rl3">
+  <div class="section-header">
+    <span class="section-tag">RL3</span>
+    <h2>Regular Expressions</h2>
+  </div>
+
+  <h3>📝 What Is a Regular Expression?</h3>
+  <p>
+    A <strong>regular expression</strong> (regex) is an algebraic formula that describes a language.
+    Instead of drawing a diagram, you write a compact mathematical expression.
+    For example, <code>(0+1)*1</code> describes all binary strings ending in 1.
+  </p>
+  <p>Regular expressions are used everywhere: text editors, compilers (to define keywords), search tools like grep.</p>
+
+  <h3>🔧 Syntax of Regular Expressions <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+
+  <div class="card definition">
+    <div class="card-label">Grammar of RegEx</div>
+    <p>A regular expression E is one of:</p>
+    <table>
+      <tr><th>Expression</th><th>Language L(E)</th><th>Meaning</th></tr>
+      <tr><td><code>∅</code></td><td><code>∅</code></td><td>Empty language (no strings)</td></tr>
+      <tr><td><code>ε</code></td><td><code>{ε}</code></td><td>Only the empty string</td></tr>
+      <tr><td><code>a</code> (a ∈ Σ)</td><td><code>{a}</code></td><td>Single character</td></tr>
+      <tr><td><code>E₁ + E₂</code></td><td><code>L(E₁) ∪ L(E₂)</code></td><td>Union (either or both)</td></tr>
+      <tr><td><code>E₁ · E₂</code> or <code>E₁E₂</code></td><td><code>L(E₁) · L(E₂)</code></td><td>Concatenation</td></tr>
+      <tr><td><code>E*</code></td><td><code>L(E)*</code></td><td>Kleene star: zero or more repetitions</td></tr>
+    </table>
+    <p><strong>Precedence:</strong> <code>*</code> binds tightest, then <code>·</code>, then <code>+</code>. So <code>ab*+c = (a(b*))+c</code>.</p>
+  </div>
+
+  <div class="card example">
+    <div class="card-label">Reading Regular Expressions — Examples</div>
+    <table>
+      <tr><th>RegEx</th><th>Language</th></tr>
+      <tr><td><code>(a+b)*</code></td><td>All strings over {a,b} (including ε)</td></tr>
+      <tr><td><code>(a+b)*a(a+b)(a+b)</code></td><td>All strings where the 3rd-from-last char is 'a'</td></tr>
+      <tr><td><code>(0+1)*01(0+1)*</code></td><td>All binary strings containing "01" as substring</td></tr>
+      <tr><td><code>alpha(alpha+digit)*</code></td><td>Identifiers: start with letter, then any alphanumeric</td></tr>
+      <tr><td><code>if + else + while + do</code></td><td>Keywords of a programming language</td></tr>
+    </table>
+  </div>
+
+  <h3>🏗️ Thompson's Construction: RegEx → ε-NFA <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    Every regular expression can be mechanically converted into an ε-NFA, and then to a DFA.
+    The construction is <em>structural</em> — it mirrors the structure of the expression.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">Thompson's Construction Rules</div>
+    <div class="automaton">
+Base cases:
+  ∅:   → [i]         (no accepting state reachable)
+  ε:   → [i] --ε-→ ((f))
+  a:   → [i] --a-→ ((f))
+
+Inductive cases — E₁ + E₂ (union):
+  Create new start i and new final f.
+  i --ε-→ start(E₁) --...E₁...-→ final(E₁) --ε-→ f
+  i --ε-→ start(E₂) --...E₂...-→ final(E₂) --ε-→ f
+
+E₁ · E₂ (concatenation):
+  Run E₁, then ε-connect its final state to E₂'s start.
+  → [i] --E₁--→ [m] --ε-→ [n] --E₂--→ ((f))
+
+E₁* (Kleene star):
+  Create new start i, new final f.
+  i --ε-→ start(E₁) --E₁--→ final(E₁) --ε-→ f
+  final(E₁) --ε-→ start(E₁)   (back edge for repetition)
+  i --ε-→ f                    (ε path for zero repetitions)
+    </div>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — Build ε-NFA for RegEx "1 0*"</div>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Build ε-NFA for <code>1</code>: <code>→ [i₁] --1--→ ((f₁))</code></span></li>
+      <li><span class="step-num">2</span><span class="step-body">Build ε-NFA for <code>0</code>: <code>→ [i₀] --0--→ ((f₀))</code></span></li>
+      <li><span class="step-num">3</span><span class="step-body">Apply Kleene star to <code>0</code>: new start s, new final t; add ε: s→i₀, f₀→i₀ (loop), f₀→t, s→t.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">Concatenate <code>1</code> with <code>0*</code>: connect f₁ with ε to s (start of 0*).</span></li>
+      <li><span class="step-num">5</span><span class="step-body">Final result: <code>i₁ --1-→ f₁ --ε-→ s --ε-→ i₀ --0-→ f₀</code>, with f₀ looping back to i₀ and f₀ --ε-→ t (accepting).</span></li>
+    </ol>
+    <div class="automaton">
+    →[i₁] --1-→ [f₁] --ε-→ [s] --ε-→ [i₀] --0-→ [f₀]
+                               |                   |  ↑
+                               ε←←←←←←←←←←←←←←←←ε   |
+                               ↓                   ε___↘ (loop)
+                             ((t))←←←←←ε←←←←←←←←←
+    </div>
+  </div>
+
+  <h3>🔄 State Elimination: DFA/NFA → RegEx <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    Going the other way — converting a DFA to a regex — uses <strong>state elimination</strong>.
+    Remove states one by one, labelling edges with regular expressions to capture the eliminated state's paths.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">State Elimination Rule</div>
+    <div class="automaton">
+Before (state q to eliminate):
+
+  [A] --R--→ [q] --S--→ [B]
+              ↑___T____↓  (self-loop on q)
+  [A] --U--→ [B]
+
+After eliminating q:
+
+  [A] --R·T*·S + U--→ [B]
+
+  (All paths that went through q are now captured in one regex label)
+    </div>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — NFA to RegEx (State Elimination)</div>
+    <p>NFA with states {1, 2, 3}, start=1, accepting={3}, transitions: 1→2 on 0, 1→2 on 1, 2→2 on 0, 2→3 on 1, 3→1 on 0.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">For each final state (here just 3), eliminate all intermediate states to find a regex from start to that state.</span></li>
+      <li><span class="step-num">2</span><span class="step-body">Eliminate state 2: path 1→2→3 becomes 1→3 labelled <code>(0+1)·0*·1</code>. Path via 3→1→2→3 contributes to a loop.</span></li>
+      <li><span class="step-num">3</span><span class="step-body">Eliminate state 1 (keeping just start and final 3): fold the loop through 3→1→2→3 as a Kleene star.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">Result: regex = <code>(0+1)*</code> (start accepts ε via direct path) <code>+</code> <code>(0+1)*·1·(0(0+1)*1)*</code></span></li>
+    </ol>
+    <p><em>In exams, just apply the pattern rules mechanically. The key pattern to memorise:</em></p>
+    <div class="automaton">
+Two-state NFA [i] --R-→ ((f)):  regex = R
+
+Three-state with self-loop:
+[i] --A-→ [q] --B-→ ((f))
+           ↑___C___↓
+regex = A·C*·B
+    </div>
+  </div>
+
+  <h3>⚖️ Laws for Regular Expressions</h3>
+  <div class="card definition">
+    <div class="card-label">Key Laws (hold for all E, F, G)</div>
+    <ul>
+      <li><code>E + F = F + E</code> (union is commutative)</li>
+      <li><code>(E + F) + G = E + (F + G)</code> (union is associative)</li>
+      <li><code>E · ε = ε · E = E</code> (ε is concatenation identity)</li>
+      <li><code>E · (F · G) = (E · F) · G</code> (concatenation is associative)</li>
+      <li><code>E · (F + G) = E·F + E·G</code> (distributivity)</li>
+      <li><code>(E*)* = E*</code></li>
+      <li><code>∅* = ε</code></li>
+      <li><strong>NOTE:</strong> <code>E·F ≠ F·E</code> in general — concatenation is NOT commutative!</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======================== RL4 ======================== -->
+<section id="rl4">
+  <div class="section-header">
+    <span class="section-tag">RL4</span>
+    <h2>Minimization, Myhill-Nerode, and Non-Regularity</h2>
+  </div>
+
+  <h3>🗜️ DFA Minimization — Why?</h3>
+  <p>
+    The same language may be accepted by DFAs with very different numbers of states.
+    Fewer states = simpler, faster. We want the <em>smallest possible</em> DFA.
+    The <strong>block refinement algorithm</strong> finds it.
+  </p>
+
+  <h3>📦 Block Refinement (Table-Filling / Partition Refinement) <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+
+  <div class="card definition">
+    <div class="card-label">Algorithm</div>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body"><strong>Initial partition Π:</strong> One block = all accepting states; one block = all non-accepting states.</span></li>
+      <li><span class="step-num">2</span><span class="step-body"><strong>Refine:</strong> Find two states p, q in the same block but on symbol a they transition to <em>different blocks</em>. If so, split their block.</span></li>
+      <li><span class="step-num">3</span><span class="step-body"><strong>Repeat</strong> until no more splits possible.</span></li>
+      <li><span class="step-num">4</span><span class="step-body"><strong>Minimal DFA:</strong> Each block becomes one state. Transitions follow accordingly.</span></li>
+    </ol>
+    <p>States in the same block at the end are <em>indistinguishable</em> — merging them doesn't change the language.</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — DFA Minimization</div>
+    <p><strong>DFA:</strong> States {0, 1, 2}, Σ={a,b}, start=0, accepting={1}. Transitions:</p>
+    <table>
+      <tr><th>State</th><th>a</th><th>b</th></tr>
+      <tr><td><code>→ 0</code></td><td><code>1</code></td><td><code>2</code></td></tr>
+      <tr><td><code>* 1</code></td><td><code>1</code></td><td><code>2</code></td></tr>
+      <tr><td><code>2</code></td><td><code>2</code></td><td><code>2</code></td></tr>
+    </table>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Initial Π = {<span class="hl">{1}</span>, <span class="hl">{0,2}</span>} (accepting vs non-accepting).</span></li>
+      <li><span class="step-num">2</span><span class="step-body">Check {0,2}: on 'a', 0→1 (block {1}), 2→2 (block {0,2}). Different blocks → split! Π = {{1},{0},{2}}.</span></li>
+      <li><span class="step-num">3</span><span class="step-body">Check {0}: singleton, no split. Check {2}: singleton. Check {1}: singleton. No more splits.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">All blocks are singletons → this DFA was already minimal. (But note: 0 and 1 have identical transitions — they should be checked. On 'a': both → {1} block; on 'b': both → {2} block → they ARE distinguishable since 0 is not accepting but 1 is. Correct split.)</span></li>
+    </ol>
+    <p>The minimised DFA has 3 states as derived from the partition.</p>
+  </div>
+
+  <h3>🧮 Myhill-Nerode Equivalence <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    This is the deep theoretical foundation. It gives us both the minimal DFA and
+    a criterion for whether a language is regular at all.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">Myhill-Nerode Equivalence ~_L</div>
+    <p>Given language L ⊆ Σ*, two strings x, y are <strong>L-equivalent</strong> (written x ~_L y) if:</p>
+    <p style="text-align:center; font-family: 'IBM Plex Mono', monospace;">for all z ∈ Σ*: xz ∈ L ⟺ yz ∈ L</p>
+    <p>"x and y are equivalent if every extension behaves the same with respect to L membership."</p>
+    <p>The equivalence classes of ~_L are the <strong>states of the minimal DFA</strong>.</p>
+  </div>
+
+  <div class="card definition">
+    <div class="card-label">Myhill-Nerode Theorem</div>
+    <p><strong>L is regular ⟺ ~_L has finitely many equivalence classes.</strong></p>
+    <p>The number of equivalence classes = the number of states in the minimal DFA.</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — Myhill-Nerode Equivalence Classes</div>
+    <p><strong>Language:</strong> L = {1ⁿ | n ≥ 1} (non-empty strings of all 1s), Σ = {0,1}.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body"><strong>[ε]_L:</strong> Which extensions z make εz ∈ L? Need z ∈ {1,11,111,…}. So [ε]_L = {ε}.</span></li>
+      <li><span class="step-num">2</span><span class="step-body"><strong>[1]_L:</strong> 1z ∈ L iff z ∈ {ε, 1, 11,…}. This is the same condition as "extend ε by z": [1]_L = L itself.</span></li>
+      <li><span class="step-num">3</span><span class="step-body"><strong>[0]_L:</strong> 0z ∈ L iff z makes "0z" all-1s — impossible. So [0]_L = Σ* \ L.</span></li>
+      <li><span class="step-num">4</span><span class="step-body">Three classes: [ε], [1]=L, [0]=Σ*\L. So minimal DFA has <span class="hl">3 states</span>.</span></li>
+    </ol>
+    <div class="automaton">
+Minimal DFA for L = {1ⁿ | n ≥ 1}:
+
+  →[ε] --1-→ ((L)) 
+   |          |
+   0          1 (self)
+   ↓          ↓
+  [0*] ←-0-- [0*]
+   ↑___0,1____↓ (sink)
+    </div>
+  </div>
+
+  <h3>🚫 Proving a Language Is NOT Regular <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>Three approaches:</p>
+
+  <h4>Approach 1: Infinite Myhill-Nerode Classes</h4>
+  <div class="card example">
+    <div class="card-label">Example</div>
+    <p>Show {aⁿbⁿ | n ≥ 0} is not regular.</p>
+    <ul>
+      <li>Consider strings aⁱ and aʲ for 0 ≤ i < j.</li>
+      <li>Choose z = bⁱ. Then aⁱbⁱ ∈ L but aʲbⁱ ∉ L.</li>
+      <li>So aⁱ ≁_L aʲ — each aⁱ is in a different equivalence class.</li>
+      <li>Infinitely many classes → not regular. ∎</li>
+    </ul>
+  </div>
+
+  <h4>Approach 2: Closure Properties Reduction</h4>
+  <div class="card example">
+    <div class="card-label">Example</div>
+    <p>Show L = {aⁿbᵐ | n ≥ m} is not regular by contradiction:</p>
+    <ul>
+      <li>Suppose L is regular.</li>
+      <li>L' = {aⁿbᵐ | n ≤ m} is also regular (by symmetry/closure).</li>
+      <li>L ∩ L' = {aⁿbⁿ | n ≥ 0} must then be regular.</li>
+      <li>But {aⁿbⁿ} is not regular (shown above). Contradiction!</li>
+    </ul>
+  </div>
+
+  <h4>Approach 3: The Pumping Lemma <span class="star">⭐</span><span class="exam-flag">EXAM</span></h4>
+  <div class="card definition">
+    <div class="card-label">Pumping Lemma</div>
+    <p>If L is regular, then there exists a "pumping length" n such that for every w ∈ L with |w| ≥ n, we can write w = xyz where:</p>
+    <ul>
+      <li><code>|xy| ≤ n</code></li>
+      <li><code>|y| ≥ 1</code> (y is non-empty)</li>
+      <li><code>xy^k·z ∈ L</code> for all k ≥ 0</li>
+    </ul>
+    <p><strong>Intuition:</strong> Long strings in a regular language must contain a "loop" that can be repeated (pumped) any number of times.</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — Pumping Lemma Proof</div>
+    <p><strong>Claim:</strong> L = {aⁿbⁿ | n ≥ 0} is not regular.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body"><strong>Assume for contradiction</strong> that L is regular. Let n be the pumping length.</span></li>
+      <li><span class="step-num">2</span><span class="step-body"><strong>Choose</strong> w = aⁿbⁿ ∈ L with |w| = 2n ≥ n.</span></li>
+      <li><span class="step-num">3</span><span class="step-body"><strong>By the lemma,</strong> w = xyz with |xy| ≤ n, |y| ≥ 1. Since |xy| ≤ n, xy consists entirely of a's. So y = aᵏ for some k ≥ 1.</span></li>
+      <li><span class="step-num">4</span><span class="step-body"><strong>Pump:</strong> Take k = 2. Then xy²z = aⁿ⁺ᵏbⁿ. This has more a's than b's, so it's <span class="hl-r">NOT in L</span>.</span></li>
+      <li><span class="step-num">5</span><span class="step-body"><strong>Contradiction</strong> with the lemma (xy²z must be in L). Therefore L is <span class="hl-r">not regular</span>. ∎</span></li>
+    </ol>
+  </div>
+
+  <div class="card warning">
+    <div class="card-label">Common Pumping Lemma Mistakes</div>
+    <ul>
+      <li>Don't confuse direction: the pumping lemma says "if regular, then pumpable." To prove non-regular, you assume regularity and derive contradiction.</li>
+      <li>You must show the contradiction works for <em>all</em> possible splittings xyz — you pick w, but the adversary picks x, y, z (within the constraints).</li>
+      <li>The pumping lemma cannot prove a language IS regular.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======================== RL5 ======================== -->
+<section id="rl5">
+  <div class="section-header">
+    <span class="section-tag">RL5</span>
+    <h2>Beyond Regular Languages — Pushdown Automata, Turing Machines, Undecidability</h2>
+  </div>
+
+  <h3>🌊 The Language Hierarchy</h3>
+  <div class="automaton">
+  Nested hierarchy of formal languages:
+
+  ┌──────────────────────────────────────────────────────┐
+  │  All languages (uncountably many)                    │
+  │  ┌────────────────────────────────────────────────┐  │
+  │  │  Decidable/Recognisable (Turing machines)      │  │
+  │  │  ┌──────────────────────────────────────────┐  │  │
+  │  │  │  Context-Free Languages (PDAs, CFGs)     │  │  │
+  │  │  │  ┌────────────────────────────────────┐  │  │  │
+  │  │  │  │  Regular Languages                 │  │  │  │
+  │  │  │  │  (DFA / NFA / ε-NFA / RegEx)       │  │  │  │
+  │  │  │  └────────────────────────────────────┘  │  │  │
+  │  │  └──────────────────────────────────────────┘  │  │
+  │  └────────────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────────────┘
+
+  Example:
+    Regular:      (a+b)*         aⁿ for n≥0
+    Context-Free: aⁿbⁿ           balanced brackets
+    Decidable:    aⁿbⁿcⁿ         (needs Turing machine)
+    Undecidable:  Halting problem  (no algorithm exists)
+  </div>
+
+  <h3>📚 Pushdown Automata (PDA) <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>
+    A <strong>pushdown automaton</strong> is a DFA with an unbounded stack. The stack gives it memory
+    to count — enough to recognise context-free languages like {aⁿbⁿ}.
+  </p>
+  <p>Why only a stack and not more? Because the richer the model, the harder the problems become
+     (equivalence for PDAs is already undecidable).</p>
+
+  <div class="card definition">
+    <div class="card-label">Formal Definition — PDA</div>
+    <p>A PDA is a 7-tuple <code>A = (Q, Σ, Γ, q₀, Z₀, δ, F)</code> where:</p>
+    <ul>
+      <li><strong>Q</strong> — finite states</li>
+      <li><strong>Σ</strong> — input alphabet</li>
+      <li><strong>Γ</strong> — stack alphabet</li>
+      <li><strong>q₀</strong> — initial state</li>
+      <li><strong>Z₀ ∈ Γ</strong> — initial stack bottom symbol</li>
+      <li><strong>δ ⊆ Q × (Σ∪{ε}) × Γ × Q × Γ*</strong> — transition relation: (state, input, top-of-stack) → (new state, string to push)</li>
+      <li><strong>F ⊆ Q</strong> — accepting states</li>
+    </ul>
+    <p>A transition <code>(q, a, Z, q', γ)</code> means: in state q, read input a, pop Z from stack, go to q', push γ onto stack.</p>
+  </div>
+
+  <div class="card walkthrough">
+    <div class="card-label">Worked Example — PDA for aⁿbⁿ</div>
+    <p>Language: {aⁿbⁿ | n ≥ 0} — push an 'a' symbol for each 'a' read, pop one for each 'b'.</p>
+    <div class="automaton">
+PDA: States {0, 1, 2, 3}, Σ={a,b}, Γ={Z, Z₀},
+     start=0, accepting={3}
+
+Transitions (notation: "input, top-of-stack / push"):
+  0 → 1:  a, Z₀ / ZZ₀   (read first 'a', push Z)
+  1 → 1:  a, Z  / ZZ     (read more 'a's, push Z for each)
+  1 → 2:  b, Z  / ε      (start reading 'b's, pop one Z)
+  2 → 2:  b, Z  / ε      (continue popping)
+  2 → 3:  ε, Z₀ / Z₀     (stack back to bottom — accept!)
+    </div>
+    <p><strong>Trace w = "aabb":</strong></p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-body">Config (0, aabb, Z₀) → read 'a', push Z: (1, abb, ZZ₀)</span></li>
+      <li><span class="step-num">2</span><span class="step-body">Config (1, abb, ZZ₀) → read 'a', push Z: (1, bb, ZZZ₀)</span></li>
+      <li><span class="step-num">3</span><span class="step-body">Config (1, bb, ZZZ₀) → read 'b', pop Z: (2, b, ZZ₀)</span></li>
+      <li><span class="step-num">4</span><span class="step-body">Config (2, b, ZZ₀) → read 'b', pop Z: (2, ε, Z₀)</span></li>
+      <li><span class="step-num">5</span><span class="step-body">Config (2, ε, Z₀) → ε-move to (3, ε, Z₀). State 3 ∈ F → <span class="hl-g">ACCEPTED</span>.</span></li>
+    </ol>
+  </div>
+
+  <h3>⚠️ Limitations of PDAs vs Regular Languages</h3>
+  <table>
+    <tr><th>Problem</th><th>Regular (DFA)</th><th>Context-Free (PDA)</th></tr>
+    <tr><td>Membership</td><td>✓ Decidable</td><td>✓ Decidable</td></tr>
+    <tr><td>Emptiness</td><td>✓ Decidable</td><td>✓ Decidable</td></tr>
+    <tr><td>Inclusion</td><td>✓ Decidable</td><td>✗ Undecidable</td></tr>
+    <tr><td>Equivalence</td><td>✓ Decidable</td><td>✗ Undecidable</td></tr>
+    <tr><td>Complement</td><td>✓ Closed</td><td>✗ Not closed</td></tr>
+    <tr><td>Determinisable</td><td>✓ Always</td><td>✗ Not always</td></tr>
+  </table>
+
+  <h3>🖥️ Turing Machines and Decidability</h3>
+  <p>
+    A <strong>Turing Machine (TM)</strong> is the most powerful theoretical computational model.
+    It has an infinite tape (not just a stack) and can read/write freely.
+    Every "reasonable" computation model has the same power as a TM — this is the
+    <strong>Church-Turing hypothesis</strong>.
+  </p>
+
+  <div class="card definition">
+    <div class="card-label">Formal Definition — Turing Machine</div>
+    <p>A TM is a 7-tuple <code>M = (Q, Σ, Γ, B, q₀, qf, δ)</code> where:</p>
+    <ul>
+      <li><strong>Q</strong> — finite states; <strong>Σ</strong> — input alphabet; <strong>Γ ⊃ Σ</strong> — tape alphabet</li>
+      <li><strong>B ∈ Γ\Σ</strong> — blank symbol; <strong>q₀</strong> — initial state; <strong>qf</strong> — final state</li>
+      <li><strong>δ ⊆ (Q\{qf}) × Γ × Q × Γ × {R,L,N}</strong> — transition: (state, read) → (new state, write, move head)</li>
+    </ul>
+    <p>L is <strong>decidable</strong> iff there is a TM M with L(M) = L (M always halts).</p>
+  </div>
+
+  <h3>♾️ Undecidability — Some Problems Have No Algorithm <span class="star">⭐</span><span class="exam-flag">EXAM</span></h3>
+  <p>There are more languages than Turing machines (languages are uncountably many; TMs are countably many). Therefore some languages must be undecidable.</p>
+
+  <div class="card definition">
+    <div class="card-label">The Halting Problem — Classic Undecidable Problem</div>
+    <p><strong>H = { (M, w) | TM M terminates on input w }</strong></p>
+    <p>Theorem: H is undecidable. There is <em>no algorithm</em> that can determine whether an arbitrary program terminates on a given input.</p>
+    <p><strong>Proof sketch (diagonalisation):</strong> Assume M_H decides H. Construct M_D that asks M_H whether M_i accepts w_i — then does the opposite. This leads to a contradiction (M_D cannot accept or reject D without contradiction). ∎</p>
+  </div>
+
+  <div class="card definition">
+    <div class="card-label">Rice's Theorem</div>
+    <p>Any non-trivial property of the language accepted by a TM is undecidable.</p>
+    <p>Consequences: No algorithm can decide whether a program:
+      always terminates, returns only prime numbers, sorts correctly, or has any specific functional property.</p>
+    <p>Note: "AI will always make mistakes when asked to solve such problems" — slides verbatim.</p>
+  </div>
+
+  <div class="card example">
+    <div class="card-label">Subroutine Technique for Proving Undecidability</div>
+    <p>To show language L is undecidable:</p>
+    <ol>
+      <li>Assume L is decidable (there is a TM M_L).</li>
+      <li>Use M_L as a subroutine to decide a known undecidable problem (like H or D).</li>
+      <li>Contradiction — M_L cannot exist.</li>
+    </ol>
+  </div>
+
+  <h3>🔮 Countability and Why Undecidable Problems Exist</h3>
+  <ul>
+    <li>The set of all Turing machines is <strong>countably infinite</strong> (they can be encoded as finite binary strings).</li>
+    <li>The set of all languages (P(Σ*)) is <strong>uncountably infinite</strong> (by Cantor's diagonalisation argument).</li>
+    <li>Therefore: most languages are not decidable by any TM.</li>
+  </ul>
+</section>
+
+<!-- ======================== KEY TAKEAWAYS ======================== -->
+<section id="takeaways">
+  <div class="section-header">
+    <span class="section-tag">Summary</span>
+    <h2>⭐ Key Takeaways</h2>
+  </div>
+
+  <p>These are the 5 most critical things to understand for the exam:</p>
+
+  <div class="takeaway-grid">
+    <div class="tk-item">
+      <div class="tk-num">1</div>
+      <div>
+        <strong>DFA, NFA, ε-NFA, and Regular Expressions are all equivalent.</strong>
+        They describe exactly the class of <em>regular languages</em>. You must be able to convert between them: RegEx → ε-NFA (Thompson), ε-NFA → DFA (subset construction + ε-closure), DFA → RegEx (state elimination). Exam questions very often ask for one or more of these conversions.
+      </div>
+    </div>
+    <div class="tk-item">
+      <div class="tk-num">2</div>
+      <div>
+        <strong>Running a DFA on a string means tracing δ* step by step.</strong>
+        Start at q₀, consume one symbol at a time to compute the next state, accept iff the final state is in F. You will be asked to do this in the exam — show every step clearly.
+      </div>
+    </div>
+    <div class="tk-item">
+      <div class="tk-num">3</div>
+      <div>
+        <strong>The Pumping Lemma and Myhill-Nerode are the tools for proving non-regularity.</strong>
+        For the pumping lemma: assume the language is regular, pick a long word, show it cannot be pumped into the language. For Myhill-Nerode: find infinitely many strings that are pairwise distinguishable (go to different equivalence classes). Both approaches appear in every year's exam paper.
+      </div>
+    </div>
+    <div class="tk-item">
+      <div class="tk-num">4</div>
+      <div>
+        <strong>DFA minimization uses block refinement: start with {F, Q\F}, refine until stable.</strong>
+        States in the same block are indistinguishable and can be merged. The minimal DFA corresponds exactly to the Myhill-Nerode equivalence classes. Exam questions often give you a larger DFA and ask for the minimal one.
+      </div>
+    </div>
+    <div class="tk-item">
+      <div class="tk-num">5</div>
+      <div>
+        <strong>Regular languages sit at the bottom of the language hierarchy.</strong>
+        Languages requiring counting (like {aⁿbⁿ}) are context-free but not regular — they need PDAs. Problems like the Halting Problem are not even decidable. In the exam, you may need to identify which class a language belongs to and explain why.
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h3>🗂️ Quick Reference — Key Formulae</h3>
+  <table>
+    <tr><th>Concept</th><th>Formula / Rule</th></tr>
+    <tr><td>DFA tuple</td><td><code>(Q, Σ, δ, q₀, F)</code></td></tr>
+    <tr><td>DFA language</td><td><code>L(A) = {w | δ*(q₀,w) ∈ F}</code></td></tr>
+    <tr><td>NFA language</td><td><code>L(A) = {w | δ*(q₀,w) ∩ F ≠ ∅}</code></td></tr>
+    <tr><td>ε-closure</td><td><code>ECLOSE(q)</code> = all states reachable via ε*</td></tr>
+    <tr><td>Subset construction</td><td><code>δ_D({q₁…qₖ}, a) = δ_N(q₁,a) ∪ … ∪ δ_N(qₖ,a)</code></td></tr>
+    <tr><td>Myhill-Nerode</td><td>x ~_L y iff ∀z: xz ∈ L ⟺ yz ∈ L</td></tr>
+    <tr><td>Pumping lemma</td><td>Regular ⇒ ∃n: |w|≥n ⇒ ∃xyz: w=xyz, |y|≥1, |xy|≤n, ∀k≥0: xy^k z∈L</td></tr>
+    <tr><td>State elimination</td><td>Eliminating q with self-loop T: A --R→ [q] --S→ B becomes A --(RT*S + U)→ B</td></tr>
+    <tr><td>RegEx precedence</td><td>* > · > + (star, concatenation, union)</td></tr>
+  </table>
+
+  <h3 style="margin-top: 30px;">📅 Exam Frequency Summary</h3>
+  <table>
+    <tr><th>Topic</th><th>Frequency</th><th>Notes</th></tr>
+    <tr><td>NFA/ε-NFA to DFA conversion</td><td>⭐⭐⭐⭐⭐</td><td>Every year 2018–2025</td></tr>
+    <tr><td>RegEx to automaton (Thompson)</td><td>⭐⭐⭐⭐⭐</td><td>Every year</td></tr>
+    <tr><td>Automaton to RegEx (elimination)</td><td>⭐⭐⭐⭐</td><td>Most years</td></tr>
+    <tr><td>Language membership tracing</td><td>⭐⭐⭐⭐⭐</td><td>Every year — show δ* steps</td></tr>
+    <tr><td>DFA minimization</td><td>⭐⭐⭐⭐</td><td>2021, 2022, 2024, 2025</td></tr>
+    <tr><td>Pumping lemma proof</td><td>⭐⭐⭐⭐</td><td>2018, 2019, 2020, 2022</td></tr>
+    <tr><td>Closure properties (union/intersection/complement)</td><td>⭐⭐⭐</td><td>2019, 2022, 2023</td></tr>
+    <tr><td>Language comparison tables (subset/overlap)</td><td>⭐⭐⭐⭐</td><td>2020, 2021, 2022, 2023, 2024, 2025</td></tr>
+    <tr><td>PDA construction from grammar</td><td>⭐⭐⭐</td><td>2018, 2019, 2020</td></tr>
+    <tr><td>Myhill-Nerode equivalence classes</td><td>⭐⭐⭐</td><td>2022, 2024</td></tr>
+  </table>
+</section>
+
+</div><!-- container -->
+
+<script>
+  // Highlight current section in nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.style.background = '');
+        const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (link) link.style.background = 'var(--surface)';
+        entry.target.classList.add('active-section');
+      } else {
+        entry.target.classList.remove('active-section');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
