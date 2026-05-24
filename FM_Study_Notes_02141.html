@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formal Methods – 02141 Study Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #f0c060;
+    --green: #3ec97e;
+    --red: #f06070;
+    --purple: #b57aff;
+    --text: #d6dde8;
+    --muted: #6b7891;
+    --heading: #eef2f8;
+    --star: #f0c060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+    padding: 0 0 80px 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.97);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  nav .brand { color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; margin-right: 6px; }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  nav a:hover { color: var(--accent); border-color: var(--accent); background: rgba(79,156,249,0.08); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #111827 0%, #1a2035 60%, #111827 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 52px 40px;
+  }
+  .hero .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--heading);
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .hero p {
+    color: var(--muted);
+    max-width: 640px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .hero-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 36px; }
+
+  /* ── SECTION ── */
+  section { padding: 48px 0 20px; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 18px;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin: 28px 0 10px;
+  }
+
+  h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 18px 0 6px;
+  }
+
+  p { margin-bottom: 12px; }
+
+  /* ── STAR BADGE ── */
+  .star {
+    display: inline-block;
+    background: rgba(240,192,96,0.13);
+    color: var(--star);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 1px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(240,192,96,0.25);
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── BOXES ── */
+  .box {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    border-left: 3px solid;
+    font-size: 14.5px;
+  }
+  .box-def   { background: rgba(79,156,249,0.07); border-color: var(--accent); }
+  .box-ex    { background: rgba(62,201,126,0.07); border-color: var(--green); }
+  .box-warn  { background: rgba(240,96,112,0.07); border-color: var(--red); }
+  .box-exam  { background: rgba(240,192,96,0.07); border-color: var(--star); }
+  .box-key   { background: rgba(181,122,255,0.07); border-color: var(--purple); }
+
+  .box strong { color: inherit; }
+  .box-def strong { color: var(--accent); }
+  .box-ex strong { color: var(--green); }
+  .box-warn strong { color: var(--red); }
+  .box-exam strong { color: var(--star); }
+  .box-key strong { color: var(--purple); }
+
+  /* ── CODE ── */
+  pre {
+    background: #0a0e18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #a8d8ff;
+    margin: 12px 0;
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: rgba(79,156,249,0.1);
+    color: #7ec8ff;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* code inside coloured boxes should not render as a blue pill */
+  .box code {
+    background: rgba(255,255,255,0.08);
+    color: inherit;
+    border-radius: 3px;
+    padding: 1px 5px;
+  }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; margin: 14px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th {
+    background: #1a2035;
+    color: var(--heading);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e2536;
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── STEP LIST ── */
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 12px 0; }
+  .steps li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    list-style: none;
+  }
+  .steps li::before {
+    counter-increment: step;
+    content: counter(step);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--accent);
+    color: #0f1117;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── RULE DISPLAY ── */
+  .rule {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+  }
+  .rule-name {
+    font-size: 10px;
+    background: var(--purple);
+    color: #0f1117;
+    border-radius: 3px;
+    padding: 1px 7px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .rule-premise { color: var(--accent); display: block; margin-bottom: 4px; }
+  .rule-bar { border-top: 1.5px solid var(--muted); margin: 8px 0; height: 0; display: block; }
+  .rule-conc { color: var(--green); display: block; margin-top: 4px; }
+  .rule-note { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+  /* ── DIAGRAM ── */
+  .diagram {
+    background: #0a0e18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--green);
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  /* ── TAKEAWAY CARDS ── */
+  .takeaway {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .takeaway-n {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    min-width: 30px;
+  }
+  .takeaway-body strong { color: var(--heading); display: block; margin-bottom: 4px; }
+
+  ul { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <span class="brand">02141 · FM</span>
+  <a href="#fm1">FM1 Program Graphs</a>
+  <a href="#fm1b">Memory &amp; Semantics</a>
+  <a href="#fm1c">Execution</a>
+  <a href="#fm2">FM2 GCL</a>
+  <a href="#fm3">FM3 Determinism</a>
+  <a href="#fm4">FM4 Hoare Logic</a>
+  <a href="#fm4b">Proof Rules</a>
+  <a href="#fm4c">Loop Invariants</a>
+  <a href="#fm5">FM5 Security</a>
+  <a href="#fm6">FM6 Concurrency</a>
+  <a href="#fm7">FM7 Model Checking</a>
+  <a href="#ltl">LTL &amp; Büchi</a>
+  <a href="#exam">Exam Patterns</a>
+  <a href="#takeaways">Takeaways</a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="tag">DTU · 02141 · Computer Science Modelling</div>
+  <h1>Formal Methods<br>Complete Study Notes</h1>
+  <p>FM1–FM7 explained from zero — plain English first, formal definition second, worked step-by-step example third.
+  Topics marked <span class="star">⭐ EXAM</span> appear frequently in the 2018–2025 papers.</p>
+  <div class="hero-pills">
+    <span class="pill"><span class="dot" style="background:var(--accent)"></span>Program Graphs</span>
+    <span class="pill"><span class="dot" style="background:var(--green)"></span>Hoare Logic</span>
+    <span class="pill"><span class="dot" style="background:var(--red)"></span>Security &amp; Info Flow</span>
+    <span class="pill"><span class="dot" style="background:var(--purple)"></span>Model Checking / LTL</span>
+    <span class="pill"><span class="dot" style="background:var(--star)"></span>GCL &amp; Concurrency</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════ FM1 ═══════════════════════════ -->
+<section id="fm1">
+  <div class="section-label">FM1 — Program Graphs</div>
+  <h2>Program Graphs &amp; What They Model</h2>
+
+  <p>A <strong>formal method</strong> is a mathematically precise technique for reasoning about programs.
+  Testing can only show bugs <em>exist</em>; formal methods let you <em>prove</em> correctness for <em>all</em> inputs.
+  Real examples: <strong>seL4</strong> (verified bug-free OS kernel) and <strong>WebAssembly</strong> (designed with a formal semantics from day one).</p>
+
+  <h3>1.1 Program Graphs <span class="star">⭐ EVERY EXAM</span></h3>
+
+  <h4>Plain English</h4>
+  <p>A program graph is a precise flowchart.
+  <strong>Nodes</strong> = places a program can "be" (before loop, inside loop, done).
+  <strong>Edges</strong> = moves the program makes, labelled with what they do (assignments or boolean tests).</p>
+
+  <h4>Formal Definition</h4>
+  <div class="box box-def">
+    <strong>PG = (Q, q▷, q◀, Act, E)</strong><br><br>
+    &bull; <strong>Q</strong> — finite set of nodes (control locations)<br>
+    &bull; <strong>q▷ ∈ Q</strong> — unique initial node<br>
+    &bull; <strong>q◀ ∈ Q</strong> — unique final node<br>
+    &bull; <strong>Act</strong> — set of actions (assignments <em>and</em> boolean tests)<br>
+    &bull; <strong>E ⊆ Q × Act × Q</strong> — finite set of directed edges (from-node, action, to-node)
+  </div>
+
+  <h4>Worked Example — Factorial Program <span class="star">⭐</span></h4>
+  <pre><code>y := 1;
+while (x > 0) {
+    y := x * y;
+    x := x - 1
+}</code></pre>
+
+  <p><strong>Step 1 — Nodes:</strong> q▷ = start &nbsp;|&nbsp; q₁ = at while-test &nbsp;|&nbsp; q₂ = doing y:=x*y &nbsp;|&nbsp; q₃ = doing x:=x-1 &nbsp;|&nbsp; q◀ = done</p>
+  <p><strong>Step 2 — Edges:</strong></p>
+
+  <div class="diagram">
+(q▷) ──[y:=1]──▶ (q₁) ──[x≤0]──▶ (q◀)
+                   │
+                 [x&gt;0]
+                   ▼
+                 (q₂) ──[y:=x*y]──▶ (q₃)
+                   ▲                    │
+                   └────[x:=x-1]────────┘</div>
+
+  <p><strong>Formally:</strong> E = { (q▷,y:=1,q₁), (q₁,x&gt;0,q₂), (q₂,y:=x*y,q₃), (q₃,x:=x-1,q₁), (q₁,x≤0,q◀) }</p>
+
+  <div class="box box-ex">
+    <strong>Key point:</strong> Boolean tests like <code>x&gt;0</code> and <code>x≤0</code> are also "actions" on edges.
+    They don't change variable values — they gate which edges can be taken.
+    Control-flow keywords (while, if) disappear into the graph structure.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM1b ═══════════════════════════ -->
+<section id="fm1b">
+  <div class="section-label">FM1 — Memory &amp; Semantics</div>
+  <h2>Memory, Semantic Functions &amp; Determinism</h2>
+
+  <h3>1.2 Memory (Program State) <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>A <strong>memory</strong> is a snapshot of all variable values — a table mapping each variable name to its current integer value.</p>
+
+  <div class="box box-def">
+    <strong>Memory:</strong> σ : Var → Int &nbsp;(assigns an integer to every variable)<br><br>
+    <strong>Memory update:</strong> σ[x ↦ i] = σ except x now maps to i<br>
+    <pre style="background:transparent;border:none;padding:2px 0;margin:4px 0;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px">σ[x ↦ i](y) = i    if y = x
+σ[x ↦ i](y) = σ(y) if y ≠ x</pre>
+    <strong>Example:</strong> If σ = {x:12, y:5} then σ[y ↦ 7] = {x:12, y:7}
+  </div>
+
+  <h3>1.3 Semantics of Actions <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>Each action says how it transforms memory.
+  An assignment updates a variable.
+  A boolean test either proceeds (memory unchanged) or <em>blocks</em> (undefined — edge cannot fire).</p>
+
+  <div class="box box-def">
+    <strong>Semantic function:</strong> S[[·]] : Act → (Mem ↪ Mem)<br>
+    Maps each action to a <em>partial</em> function on memories (partial = can be undefined).
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Action α</th><th>S[[α]](σ)</th><th>Notes</th></tr>
+    <tr><td><code>x := a</code></td><td>σ[x ↦ A[[a]](σ)]</td><td>Always defined (no div-by-zero)</td></tr>
+    <tr><td><code>b</code> when B[[b]](σ) = true</td><td>σ (unchanged)</td><td>Guard passes; memory unmodified</td></tr>
+    <tr><td><code>b</code> when B[[b]](σ) = false</td><td>undefined</td><td>Edge cannot be taken</td></tr>
+  </table>
+  </div>
+
+  <div class="box box-ex">
+    <strong>Examples:</strong><br>
+    S[[y:=1]](σ) = σ[y↦1]<br>
+    S[[x&gt;0]](σ) = σ if σ(x)&gt;0; undefined otherwise<br>
+    S[[y:=x*y]](σ) = σ[y ↦ σ(x)×σ(y)]
+  </div>
+
+  <h3>1.5 Deterministic Systems <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>A system is <strong>deterministic</strong> if at most one execution is possible for each starting memory.
+  No memory should enable two different outgoing edges from the same node simultaneously.</p>
+
+  <div class="box box-def">
+    <strong>Determinism condition:</strong> For all edges (q,α₁,q₁),(q,α₂,q₂) ∈ E with (α₁,q₁)≠(α₂,q₂):<br>
+    <pre style="background:transparent;border:none;padding:2px 0;margin:4px 0;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px">dom(S[[α₁]]) ∩ dom(S[[α₂]]) = ∅</pre>
+    Guards like <code>x&gt;0</code> and <code>x≤0</code> always have disjoint domains — exactly one fires for any x. This is why GCL guards ensure determinism.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM1c ═══════════════════════════ -->
+<section id="fm1c">
+  <div class="section-label">FM1 — Operational Semantics</div>
+  <h2>Configurations &amp; Execution Steps</h2>
+
+  <h3>1.4 Configurations &amp; Execution <span class="star">⭐ EVERY EXAM</span></h3>
+  <h4>Plain English</h4>
+  <p>A <strong>configuration</strong> is a snapshot of the running program: which node you are at (the program counter) <em>and</em> what all variables hold (the memory).
+  An <strong>execution step</strong> fires an edge, moving to a new configuration.</p>
+
+  <div class="box box-def">
+    <strong>Configuration:</strong> ⟨q; σ⟩ where q ∈ Q and σ ∈ Mem<br>
+    Initial: q = q▷ &nbsp;|&nbsp; Final: q = q◀<br><br>
+    <strong>Execution step:</strong> ⟨q₀; σ⟩ ⟹<sup>α</sup> ⟨q•; σ'⟩ whenever<br>
+    &nbsp;&nbsp;1. (q₀, α, q•) ∈ E — edge exists<br>
+    &nbsp;&nbsp;2. S[[α]](σ) = σ' — action is defined and produces σ'<br><br>
+    <strong>Reachability:</strong> ⟨q₀;σ⟩ ⟹* ⟨q•;σ'⟩ means reachable via 0 or more steps
+  </div>
+
+  <h4>Full Execution Trace — Factorial with x=2 <span class="star">⭐</span></h4>
+  <div class="table-wrap">
+  <table>
+    <tr><th>#</th><th>Configuration</th><th>Action fired</th><th>Result</th></tr>
+    <tr><td>0</td><td>⟨q▷; {x:2, y:0}⟩</td><td>—</td><td>start</td></tr>
+    <tr><td>1</td><td>⟨q▷; {x:2,y:0}⟩ ⟹</td><td>y:=1</td><td>⟨q₁; {x:2,y:1}⟩</td></tr>
+    <tr><td>2</td><td>⟨q₁; {x:2,y:1}⟩ ⟹</td><td>x&gt;0 (2&gt;0 ✓)</td><td>⟨q₂; {x:2,y:1}⟩</td></tr>
+    <tr><td>3</td><td>⟨q₂; {x:2,y:1}⟩ ⟹</td><td>y:=x*y → 2×1=2</td><td>⟨q₃; {x:2,y:2}⟩</td></tr>
+    <tr><td>4</td><td>⟨q₃; {x:2,y:2}⟩ ⟹</td><td>x:=x-1 → 2-1=1</td><td>⟨q₁; {x:1,y:2}⟩</td></tr>
+    <tr><td>5</td><td>⟨q₁; {x:1,y:2}⟩ ⟹</td><td>x&gt;0 (1&gt;0 ✓)</td><td>⟨q₂; {x:1,y:2}⟩</td></tr>
+    <tr><td>6</td><td>⟨q₂; {x:1,y:2}⟩ ⟹</td><td>y:=x*y → 1×2=2</td><td>⟨q₃; {x:1,y:2}⟩</td></tr>
+    <tr><td>7</td><td>⟨q₃; {x:1,y:2}⟩ ⟹</td><td>x:=x-1 → 1-1=0</td><td>⟨q₁; {x:0,y:2}⟩</td></tr>
+    <tr><td>8</td><td>⟨q₁; {x:0,y:2}⟩ ⟹</td><td>x≤0 (0≤0 ✓)</td><td>⟨q◀; {x:0,y:2}⟩ ✅</td></tr>
+  </table>
+  </div>
+
+  <div class="box box-ex">
+    <strong>Result:</strong> Starting with x=2, program terminates with y=2 = 2! ✓<br>
+    The <strong>operational semantics</strong> = the set of all complete execution sequences (all paths from q▷ to q◀).
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM2 ═══════════════════════════ -->
+<section id="fm2">
+  <div class="section-label">FM2 — Guarded Command Language</div>
+  <h2>GCL: Syntax &amp; Translation to Program Graphs</h2>
+
+  <p>GCL (Guarded Command Language) was designed by Dijkstra — a tiny language ideal for formal reasoning: small enough to define with complete mathematical precision, large enough to express all real programs.</p>
+
+  <h3>2.1 GCL Syntax <span class="star">⭐</span></h3>
+
+  <div class="box box-def">
+<pre style="background:transparent;border:none;padding:0;margin:0;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7">Commands C:
+  C ::= x := a        (assignment)
+      | skip           (no-op)
+      | C₁; C₂         (sequencing)
+      | if GC fi       (conditional)
+      | do GC od       (loop)
+
+Guarded commands GC:
+  GC ::= b -&gt; C        (if b holds, execute C)
+       | GC₁ [] GC₂    (choice — non-det. if both guards hold)</pre>
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Construct</th><th>GCL</th><th>Meaning</th></tr>
+    <tr><td>Assignment</td><td><code>x := a</code></td><td>Set x to value of expression a</td></tr>
+    <tr><td>No-op</td><td><code>skip</code></td><td>Do nothing</td></tr>
+    <tr><td>Sequence</td><td><code>C₁; C₂</code></td><td>C₁ then C₂</td></tr>
+    <tr><td>Conditional</td><td><code>if b₁->C₁ [] b₂->C₂ fi</code></td><td>Execute whichever branch's guard is true</td></tr>
+    <tr><td>Loop</td><td><code>do b->C od</code></td><td>Repeat while b holds; exit when ¬b</td></tr>
+    <tr><td>Choice op</td><td><code>[]</code></td><td>Non-deterministic if both guards simultaneously true</td></tr>
+  </table>
+  </div>
+
+<pre><code>// Factorial
+y := 1;
+do x > 0 -> y := x * y;
+            x := x - 1
+od
+
+// Maximum of x, y stored in z
+if x >= y -> z := x
+[] y > x  -> z := y
+fi</code></pre>
+
+  <h3>2.2 Translating GCL to Program Graphs <span class="star">⭐ EVERY EXAM</span></h3>
+  <h4>Plain English</h4>
+  <p>Each GCL construct has a systematic recipe. The translation is <strong>compositional</strong>: translate each subcommand, then glue the pieces together by sharing nodes.</p>
+  <p>Key function: <code>edges(q₀ ↝ q•)[[C]]</code> — the set of edges produced by translating command C between entry node q₀ and exit node q•.</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>GCL Construct</th><th>Translation Rule</th></tr>
+    <tr><td><code>x := a</code></td><td>Add one edge: (q₀, x:=a, q•)</td></tr>
+    <tr><td><code>skip</code></td><td>Add one edge: (q₀, skip, q•)</td></tr>
+    <tr><td><code>C₁; C₂</code></td><td>Fresh node q_mid; translate C₁: q₀↝q_mid, then C₂: q_mid↝q•</td></tr>
+    <tr><td><code>if b₁->C₁ [] b₂->C₂ fi</code></td><td>Translate each branch independently, both sharing entry q₀ and exit q•</td></tr>
+    <tr><td><code>do b->C od</code></td><td>Guard-true branch loops back to q₀; guard-false edge (¬b) exits to q•</td></tr>
+  </table>
+  </div>
+
+  <h4>Worked Translation <span class="star">⭐</span></h4>
+  <p>Translate: <code>y := 0; do x ≥ 0 -> y := y + x*x; x := x - 1 od</code></p>
+  <ul class="steps">
+    <li>Outer structure = <code>C₁; C₂</code>. Introduce q₁ as midpoint between q▷ and the loop.</li>
+    <li>C₁ = <code>y:=0</code>: add edge (q▷, y:=0, q₁).</li>
+    <li>Loop body = <code>y:=y+x*x; x:=x-1</code>. Introduce q₂ (after 1st assignment) and q₃ (after 2nd).</li>
+    <li>Loop enter: (q₁, x≥0, q₂). Loop exit: (q₁, x&lt;0, q◀).</li>
+    <li>Body: (q₂, y:=y+x*x, q₃) and (q₃, x:=x-1, q₁) — the loop-back edge.</li>
+  </ul>
+  <div class="diagram">
+(q▷) ──[y:=0]──▶ (q₁) ──[x&lt;0]──▶ (q◀)
+                    │
+                  [x≥0]
+                    ▼
+                  (q₂) ──[y:=y+x*x]──▶ (q₃) ──[x:=x-1]──▶ ↑</div>
+</section>
+
+<!-- ═══════════════════════════ FM3 ═══════════════════════════ -->
+<section id="fm3">
+  <div class="section-label">FM3 — Deterministic Semantics</div>
+  <h2>Deterministic GCL &amp; Structural Induction</h2>
+
+  <h3>3.1 Making GCL Deterministic</h3>
+  <p>The standard <code>if ... fi</code> is <em>non-deterministic</em> if two guards are simultaneously true.
+  The deterministic variant adds "no previous guard held" to each branch.
+  Branch bᵢ gets extra guard <strong>¬(b₁ ∨ ... ∨ bᵢ₋₁)</strong> — it fires only when all earlier guards were false.</p>
+
+  <div class="box box-ex">
+    <strong>Example:</strong> <code>if x≥y -> z:=x [] y>x -> z:=y fi</code><br>
+    Guards x≥y and y>x are mutually exclusive for any distinct x,y — already deterministic.<br>
+    But <code>x≥y</code> and <code>y≥x</code> overlap when x=y — that would be non-deterministic!
+  </div>
+
+  <h3>3.2 Structural Induction</h3>
+  <p>To prove a property holds for <em>all</em> GCL programs, use structural induction — mirroring how programs are built inductively from atoms.</p>
+  <ul>
+    <li><strong>Base cases:</strong> prove for <code>x:=a</code> and <code>skip</code>.</li>
+    <li><strong>Inductive step:</strong> assume for C₁, C₂; prove for <code>C₁;C₂</code>, <code>if GC fi</code>, <code>do GC od</code>.</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════ FM4 ═══════════════════════════ -->
+<section id="fm4">
+  <div class="section-label">FM4 — Program Verification</div>
+  <h2>Hoare Logic: Specifying &amp; Proving Program Correctness</h2>
+
+  <p>Program verification = <strong>proving</strong> a program does what it should, for <em>all</em> inputs.
+  Dijkstra: <em>"Program testing can be very effective to show the presence of bugs, but it is hopelessly inadequate for showing their absence."</em></p>
+
+  <h3>4.1 Predicates</h3>
+  <div class="box box-def">
+    <strong>Predicate:</strong> a set P ⊆ Mem of memories (a condition on variable values).<br><br>
+    <strong>σ ⊨ P</strong> — σ satisfies P (σ ∈ P)<br>
+    <strong>P ⊨ Q</strong> — P entails Q (P ⊆ Q — every memory in P is also in Q)
+  </div>
+  <div class="table-wrap">
+  <table>
+    <tr><th>English condition</th><th>As a predicate</th></tr>
+    <tr><td>x is positive</td><td>{σ | σ(x) &gt; 0}</td></tr>
+    <tr><td>x is even</td><td>{σ | ∃y: σ(x) = 2y}</td></tr>
+    <tr><td>y = x factorial</td><td>{σ | σ(y) = factorial(σ(x))}</td></tr>
+    <tr><td>Always true</td><td>Mem</td></tr>
+    <tr><td>Always false</td><td>∅</td></tr>
+  </table>
+  </div>
+
+  <h3>4.2 Floyd-Hoare Triples <span class="star">⭐ CORE TOPIC</span></h3>
+  <h4>Plain English</h4>
+  <p>A Hoare triple is a mathematical <strong>contract</strong> for a program.
+  It says: "If you start in a state where P holds, and the program terminates, then Q holds at the end."
+  This is <strong>partial correctness</strong> — termination is separate.</p>
+
+  <div class="box box-def">
+    <strong>⊨ {P} C {Q}</strong> is valid iff:<br>
+    For every complete execution sequence ⟨q▷; σ⟩ ⟹* ⟨q◀; σ'⟩ of C:<br>
+    &nbsp;&nbsp;&nbsp;if σ ⊨ P &nbsp;&nbsp;then&nbsp;&nbsp; σ' ⊨ Q
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Triple</th><th>Meaning</th></tr>
+    <tr><td><code>{x=n ∧ n≥0} factorial {y=n!}</code></td><td>Factorial program is correct</td></tr>
+    <tr><td><code>{true} x:=5 {x=5}</code></td><td>After assigning 5, x equals 5</td></tr>
+    <tr><td><code>{x&gt;5} x:=x+1 {x&gt;6}</code></td><td>Incrementing from &gt;5 gives &gt;6</td></tr>
+  </table>
+  </div>
+
+  <div class="box box-exam">
+    <strong>⭐ Exam pattern:</strong> Given a program and specification, either prove the triple using proof rules (show each rule application), or find a counterexample execution to disprove it.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM4b ═══════════════════════════ -->
+<section id="fm4b">
+  <div class="section-label">FM4 — Proof Rules</div>
+  <h2>Hoare Logic Proof Rules <span class="star">⭐ ALL MUST BE KNOWN</span></h2>
+
+  <p>These rules let you prove triples <em>structurally</em> — one construct at a time. A valid proof is a tree; every leaf is an axiom.</p>
+
+  <div class="rule">
+    <span class="rule-name">skip</span>
+    <span class="rule-premise">— (no premises)</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{Q} skip {Q}</span>
+    <p class="rule-note">skip does not change memory, so whatever held before still holds after.</p>
+  </div>
+
+  <div class="rule">
+    <span class="rule-name">assign</span>
+    <span class="rule-premise">— (no premises)</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{Q[a/x]} &nbsp; x := a &nbsp; {Q}</span>
+    <p class="rule-note">Q[a/x] = "Q with every x replaced by a." This is <strong>backward reasoning</strong>: start from the postcondition and compute the required precondition.</p>
+  </div>
+
+  <div class="rule">
+    <span class="rule-name">seq</span>
+    <span class="rule-premise">{P} C₁ {R} &nbsp;&nbsp;&nbsp;&nbsp; {R} C₂ {Q}</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{P} C₁; C₂ {Q}</span>
+    <p class="rule-note">R is the "midpoint predicate." Choosing R well is the creative step.</p>
+  </div>
+
+  <div class="rule">
+    <span class="rule-name">cond</span>
+    <span class="rule-premise">{P ∧ b₁} C₁ {Q} &nbsp; ... &nbsp; {P ∧ bₙ} Cₙ {Q}</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{P} if b₁->C₁ [] ... [] bₙ->Cₙ fi {Q}</span>
+    <p class="rule-note">Each branch verified independently, with its own guard added to the precondition.</p>
+  </div>
+
+  <div class="rule">
+    <span class="rule-name">cons (consequence)</span>
+    <span class="rule-premise">P ⊨ P' &nbsp;&nbsp;&nbsp; {P'} C {Q'} &nbsp;&nbsp;&nbsp; Q' ⊨ Q</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{P} C {Q}</span>
+    <p class="rule-note">Allows strengthening the precondition or weakening the postcondition. Used when the other rules give a slightly different pre/post than needed.</p>
+  </div>
+
+  <div class="rule">
+    <span class="rule-name">loop (do-rule)</span>
+    <span class="rule-premise">P ⊨ I &nbsp;&nbsp;&nbsp;&nbsp; {I ∧ b} C {I} &nbsp;&nbsp;&nbsp;&nbsp; I ∧ ¬b ⊨ Q</span>
+    <div class="rule-bar"></div>
+    <span class="rule-conc">{P} do b -> C od {Q}</span>
+    <p class="rule-note">I is the <strong>loop invariant</strong>. Three things to check: (1) I holds before the loop, (2) I is preserved by each iteration, (3) when loop exits (¬b), I implies Q.</p>
+  </div>
+
+  <h3>Worked Example: Assignment Rule <span class="star">⭐</span></h3>
+
+  <p><strong>Goal:</strong> Prove <code>{x &gt; 5} x := x+1 {x &gt; 6}</code></p>
+  <ul class="steps">
+    <li>Postcondition Q = "x &gt; 6".</li>
+    <li>Apply [assign]: compute Q[x+1/x] = "x+1 &gt; 6" = "x &gt; 5".</li>
+    <li>[assign] gives us: <code>{x&gt;5} x:=x+1 {x&gt;6}</code> ✓</li>
+  </ul>
+
+  <p><strong>Goal:</strong> Prove <code>{true} x:=5; y:=x+1 {y=6}</code></p>
+  <ul class="steps">
+    <li>Apply [assign] to <code>y:=x+1</code> with postcondition Q = "y=6". Substitute x+1 for x: Q[x+1/x] = "x+1=6... wait — here we assign to y, so substitute in the postcondition for y's new value. The postcondition "y=6" with y replaced by x+1 gives "x+1=6", i.e., "x=5". Result: <code>{x=5} y:=x+1 {y=6}</code>.</li>
+    <li>Apply [assign] to <code>x:=5</code> with Q = "x=5". Q[5/x] = "5=5" = true. Result: <code>{true} x:=5 {x=5}</code>.</li>
+    <li>Apply [seq] with midpoint R = "x=5": conclude <code>{true} x:=5; y:=x+1 {y=6}</code> ✓</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════ FM4c ═══════════════════════════ -->
+<section id="fm4c">
+  <div class="section-label">FM4 — Loop Invariants</div>
+  <h2>Loop Invariants <span class="star">⭐ HIGHEST EXAM FREQUENCY</span></h2>
+
+  <h4>Plain English</h4>
+  <p>A <strong>loop invariant</strong> I is a condition that is true at the start of <em>every single iteration</em>.
+  It "survives" each pass through the loop body.
+  This lets us reason about a loop that runs a million times using just one logical statement.</p>
+
+  <div class="box box-warn">
+    <strong>The hard part:</strong> Finding a good invariant is the <em>creative</em> step — there is no algorithm for it.
+    Checking the three conditions (once you have I) is mechanical.
+    Practise on factorial, counting, and integer division.
+  </div>
+
+  <h3>Full Worked Example — Factorial <span class="star">⭐</span></h3>
+  <pre><code>{ x = n ∧ n ≥ 0 }
+y := 1;
+do x > 0 ->
+    y := x * y;
+    x := x - 1
+od
+{ y = n! }</code></pre>
+
+  <p><strong>Invariant I:</strong> <code>y · x! = n! ∧ x ≥ 0</code></p>
+
+  <ul class="steps">
+    <li><strong>P ⊨ I:</strong> Before loop (after y:=1): y=1, x=n. Does y·x! = n!? 1·n! = n! ✓ &nbsp; x≥0? n≥0 ✓</li>
+    <li><strong>{I∧b} C {I}:</strong> Assume y·x!=n! and x&gt;0. After y:=x*y: new_y=x·y. After x:=x-1: new_x=x-1. New_y·(new_x)! = x·y·(x-1)! = y·x! = n! ✓ &nbsp; new_x=x-1≥0 (since x≥1) ✓</li>
+    <li><strong>I∧¬b ⊨ Q:</strong> Loop exits when x≤0. With I: x≥0. So x=0. Then y·0!=n! → y·1=n! → y=n! ✓</li>
+  </ul>
+
+  <div class="box box-ex">
+    <strong>Proof outline:</strong>
+<pre style="background:transparent;border:none;padding:0;margin:4px 0 0 0;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.7">{ x = n ∧ n ≥ 0 }
+y := 1;
+{ y · x! = n! ∧ x ≥ 0 }    ← invariant established
+do x &gt; 0 -&gt;
+    { I ∧ x &gt; 0 }
+    y := x * y;
+    x := x - 1
+    { I }                    ← invariant preserved
+od
+{ y · x! = n! ∧ x = 0 }
+{ y = n! }                   ← postcondition ✓</pre>
+  </div>
+
+  <h3>Common Invariants — Quick Reference</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Program</th><th>Invariant I</th><th>Postcondition Q</th></tr>
+    <tr><td>Count from 0 to n: <code>do x&lt;n -> x:=x+1 od</code></td><td>0 ≤ x ∧ x ≤ n</td><td>x = n</td></tr>
+    <tr><td>Factorial</td><td>y · x! = n! ∧ x ≥ 0</td><td>y = n!</td></tr>
+    <tr><td>Integer division X÷Y</td><td>X = z·Y + x ∧ 0 ≤ x</td><td>x &lt; Y</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM5 ═══════════════════════════ -->
+<section id="fm5">
+  <div class="section-label">FM5 — Language-Based Security</div>
+  <h2>Security &amp; Information Flow</h2>
+
+  <p>FM5 applies program verification to <strong>security</strong>.
+  The question: can private data leak to public outputs?
+  We use formal methods to <em>prove</em> that information doesn't flow where it shouldn't.</p>
+
+  <h3>5.1 The CIA Model</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Property</th><th>Meaning</th><th>Violation example</th></tr>
+    <tr><td><strong>Confidentiality</strong></td><td>Private data not disclosed to unauthorised parties</td><td>Password leaks into log output</td></tr>
+    <tr><td><strong>Integrity</strong></td><td>Trusted data not corrupted by untrusted inputs</td><td>SQL injection corrupts database</td></tr>
+    <tr><td><strong>Availability</strong></td><td>Data accessible when needed</td><td>DDoS (not formally modelled in this course)</td></tr>
+  </table>
+  </div>
+
+  <h3>5.2 Non-Interference <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>Non-interference: run the same program twice with <em>different secret values</em> but the <em>same public inputs</em>.
+  If you always get the <em>same public outputs</em>, secrets cannot leak.</p>
+
+  <div class="box box-def">
+    <strong>u interferes with v</strong> if there exist memories σ₁, σ₂ such that:<br>
+    1. σ₁(v) = σ₂(v) &nbsp; (v starts equal in both runs)<br>
+    2. ⟨q▷,σ₁⟩ ⟹* ⟨q◀,σ'₁⟩ &nbsp; and &nbsp; ⟨q▷,σ₂⟩ ⟹* ⟨q◀,σ'₂⟩<br>
+    3. σ'₁(v) ≠ σ'₂(v) &nbsp; (v ends differently)<br><br>
+    If u does <em>not</em> interfere with v: final value of v is independent of initial value of u.
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Program</th><th>Interference?</th><th>Secure?</th></tr>
+    <tr><td><code>b := a</code></td><td>Yes — b changes when a changes</td><td>❌ Insecure (secret a leaks to public b)</td></tr>
+    <tr><td><code>a := b</code></td><td>No — b unchanged</td><td>✓ OK</td></tr>
+    <tr><td><code>b := 0</code></td><td>No — b always 0</td><td>✓ Secure</td></tr>
+    <tr><td><code>if a=0->b:=1 [] true->b:=0 fi</code></td><td>Yes — b's value reveals whether a=0</td><td>❌ Implicit flow!</td></tr>
+  </table>
+  </div>
+
+  <div class="box box-warn">
+    <strong>Implicit flows:</strong> Even without directly assigning a secret to a public variable, a conditional whose <em>guard</em> depends on a secret leaks information via which branch was taken. This is subtle and the most common exam trick.
+  </div>
+
+  <h3>Two-Copy Verification Technique <span class="star">⭐</span></h3>
+  <p>To prove <em>a does not interfere with b</em>:</p>
+  <ul class="steps">
+    <li>Create two copies of the program — rename every variable x to x₁ in copy 1, x₂ in copy 2.</li>
+    <li>Form the product program P₁×₂.</li>
+    <li>Prove the Hoare triple <code>{b₁=b₂} P₁×₂ {b₁=b₂}</code>: if both copies start with the same b value, they end with the same b value.</li>
+    <li>If this holds, b cannot reveal anything about a. ✓ &nbsp; Tool: <strong>Chip</strong> at chip-pv.netlify.app/chip</li>
+  </ul>
+
+  <h3>5.3 Security Type Systems <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>A security type system enforces non-interference <em>statically</em>.
+  Variables get a security level (H = secret, L = public).
+  The rule: information can only flow <em>upward</em> in the lattice.</p>
+
+  <div class="diagram">
+H (High / secret / private)
+↑  ← information can flow upward: L→H is OK
+L (Low / public)</div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Program</th><th>Analysis</th><th>Verdict</th></tr>
+    <tr><td><code>log := password</code></td><td>Γ(password)=H, Γ(log)=L. H &gt; L — violation!</td><td>❌ Rejected</td></tr>
+    <tr><td><code>password := username</code></td><td>Γ(username)=L ≤ H=Γ(password). OK.</td><td>✓ Accepted</td></tr>
+    <tr><td><code>if password=0 -> log:=1 fi</code></td><td>Guard is H; body writes to L — implicit flow!</td><td>❌ Rejected</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM6 ═══════════════════════════ -->
+<section id="fm6">
+  <div class="section-label">FM6 — Concurrency</div>
+  <h2>Parallel Composition &amp; Race Conditions</h2>
+
+  <h3>Parallel Composition</h3>
+  <p>Two programs P₁ and P₂ running concurrently are modelled by the <strong>product</strong> of their program graphs.
+  A combined configuration is ⟨q¹, q²; σ⟩ — one node per process, plus shared memory.
+  Either process can take a step at any time: <em>interleaved semantics</em>.</p>
+
+  <div class="box box-def">
+    <strong>Execution step (parallel):</strong> Process i takes its step (q^i_o, α, q^i_•) if the edge exists and S[[α]](σ) = σ'.
+    All other processes stay at their current nodes.
+  </div>
+
+  <div class="box box-ex">
+    <strong>Race condition example:</strong><br>
+    P₁: <code>if balance≥pay_Bob -> balance:=balance-pay_Bob fi</code><br>
+    P₂: <code>if balance≥pay_Charlie -> balance:=balance-pay_Charlie fi</code><br><br>
+    Both check the guard simultaneously — both pass — both deduct → negative balance!
+    The product graph exposes this interleaving.
+  </div>
+
+  <div class="box box-exam">
+    <strong>⭐ Exam topics for FM6:</strong> Drawing the product program graph for two parallel processes, tracing all interleavings, identifying race conditions, checking a safety property holds for all interleavings.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FM7 ═══════════════════════════ -->
+<section id="fm7">
+  <div class="section-label">FM7 — Model Checking</div>
+  <h2>Model Checking &amp; Temporal Logic</h2>
+
+  <p>Model checking = automatically verifying that a system satisfies a temporal property.
+  A tool exhaustively explores all behaviours and either confirms the property holds, or gives a concrete <strong>counterexample</strong>.
+  Target: <strong>reactive systems</strong> that run continuously (protocols, embedded controllers, concurrent programs).</p>
+</section>
+
+<!-- ═══════════════════════════ LTL ═══════════════════════════ -->
+<section id="ltl">
+  <div class="section-label">FM7 — LTL &amp; Büchi Automata</div>
+  <h2>Linear Temporal Logic &amp; Model Checking Algorithm</h2>
+
+  <h3>LTL Operators <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>LTL reasons about <em>traces</em> — infinite sequences of states. It adds temporal operators to ordinary logic so you can say things like "eventually", "always", and "until".</p>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>Op</th><th>Read as</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><strong>X</strong> φ</td><td>neXt φ</td><td>φ holds in the very next state</td><td><code>X(x=0)</code></td></tr>
+    <tr><td><strong>F</strong> φ</td><td>Finally φ</td><td>φ holds at some future point (eventually)</td><td><code>F(done)</code></td></tr>
+    <tr><td><strong>G</strong> φ</td><td>Globally φ</td><td>φ holds at every future point (always)</td><td><code>G(safe)</code></td></tr>
+    <tr><td><strong>φ U ψ</strong></td><td>φ Until ψ</td><td>φ holds continuously until ψ becomes true (ψ must eventually hold)</td><td><code>active U done</code></td></tr>
+  </table>
+  </div>
+
+  <h3>LTL Property Patterns <span class="star">⭐ TRANSLATE THESE IN EXAMS</span></h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>English</th><th>LTL Formula</th></tr>
+    <tr><td>"The system is always safe"</td><td><code>G(safe)</code></td></tr>
+    <tr><td>"The system never deadlocks"</td><td><code>G(¬deadlock)</code></td></tr>
+    <tr><td>"A request is eventually granted"</td><td><code>F(granted)</code></td></tr>
+    <tr><td>"Every request is eventually granted"</td><td><code>G(request → F granted)</code></td></tr>
+    <tr><td>"Every dollar gets a coffee"</td><td><code>G(dollar → F coffee)</code></td></tr>
+    <tr><td>"p holds infinitely often"</td><td><code>G(F p)</code></td></tr>
+    <tr><td>"From some point on, p always holds"</td><td><code>F(G p)</code></td></tr>
+    <tr><td>"Between any two a's there is a b"</td><td><code>G(a → X(¬a U b))</code></td></tr>
+  </table>
+  </div>
+
+  <h3>LTL Semantics</h3>
+  <div class="box box-def">
+    A trace w = w₀ w₁ w₂ ... satisfies φ at position i (written w,i ⊨ φ):<br><br>
+    &bull; w,i ⊨ Xφ &nbsp; iff &nbsp; w,i+1 ⊨ φ<br>
+    &bull; w,i ⊨ Fφ &nbsp; iff &nbsp; ∃j ≥ i: w,j ⊨ φ<br>
+    &bull; w,i ⊨ Gφ &nbsp; iff &nbsp; ∀j ≥ i: w,j ⊨ φ<br>
+    &bull; w,i ⊨ φUψ &nbsp; iff &nbsp; ∃j ≥ i: w,j ⊨ ψ &nbsp; and &nbsp; ∀k∈[i,j): w,k ⊨ φ
+  </div>
+
+  <h3>Büchi Automata <span class="star">⭐</span></h3>
+  <h4>Plain English</h4>
+  <p>A Büchi automaton is like a DFA, but for <em>infinite</em> words.
+  It "accepts" an infinite trace if the run visits an accepting state <strong>infinitely often</strong> — rather than ending in one.</p>
+
+  <div class="box box-def">
+    <strong>DBA:</strong> A = (Q, Σ, δ, q₀, F) — same structure as a DFA.<br>
+    <strong>Acceptance:</strong> An infinite word w is accepted if the run visits F <em>infinitely often</em>.
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th></th><th>DFA (finite words)</th><th>Büchi Automaton (infinite words)</th></tr>
+    <tr><td>Structure</td><td>Q, Σ, δ, q₀, F</td><td>Same: Q, Σ, δ, q₀, F</td></tr>
+    <tr><td>Acceptance</td><td>Run <em>ends</em> in F</td><td>Run visits F <em>infinitely often</em></td></tr>
+    <tr><td>Models</td><td>Terminating programs</td><td>Reactive / non-terminating systems</td></tr>
+  </table>
+  </div>
+
+  <h3>LTL Model Checking Algorithm <span class="star">⭐</span></h3>
+  <ul class="steps">
+    <li><strong>System:</strong> Express as a transition system TS with states, transitions, proposition labels.</li>
+    <li><strong>Property:</strong> Express as LTL formula φ.</li>
+    <li><strong>Negate:</strong> Form ¬φ. A violation of φ is a witness for ¬φ.</li>
+    <li><strong>Translate:</strong> Convert ¬φ to a Büchi automaton A_¬φ (tools like SPOT do this).</li>
+    <li><strong>Product:</strong> Build TS ⊗ A_¬φ.</li>
+    <li><strong>Emptiness check:</strong> Is there an accepting run?<br>
+        &nbsp;&nbsp;• No → φ holds for all behaviours ✓<br>
+        &nbsp;&nbsp;• Yes → counterexample found: a concrete violating trace ✗</li>
+  </ul>
+
+  <h3>Counterexamples: The Lasso <span class="star">⭐</span></h3>
+  <p>For LTL, a counterexample is always a <strong>lasso</strong>: a finite prefix followed by a loop that repeats forever.</p>
+
+  <div class="diagram">
+s₀ → s₁ → s₂ → s₃
+               ↑    ↓
+               s₅ ← s₄
+
+Prefix: s₀ → s₁ → s₂
+Loop:   s₃ → s₄ → s₅ → s₃  (repeats forever)</div>
+
+  <p>A lasso is: (1) finite to describe, (2) proof that the property is violated on at least one execution, (3) something you can trace manually to understand why.</p>
+
+  <h3>CTL vs LTL — Brief Comparison</h3>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Logic</th><th>Quantifies over</th><th>Path quantifiers</th><th>Key formulas</th></tr>
+    <tr><td>LTL</td><td>Individual traces (linear time)</td><td>Implicit — all traces</td><td>G, F, X, U</td></tr>
+    <tr><td>CTL</td><td>Computation tree (branching time)</td><td>Explicit: A (all paths), E (exists path)</td><td>AG, EF, AF, EG</td></tr>
+  </table>
+  </div>
+
+  <div class="table-wrap">
+  <table>
+    <tr><th>CTL formula</th><th>Meaning</th></tr>
+    <tr><td><code>EF p</code></td><td>There exists a path where p eventually holds (reachability)</td></tr>
+    <tr><td><code>AG p</code></td><td>On all paths, p always holds (invariant)</td></tr>
+    <tr><td><code>AF p</code></td><td>On all paths, p eventually holds</td></tr>
+    <tr><td><code>EG p</code></td><td>There exists an infinite path where p holds globally</td></tr>
+  </table>
+  </div>
+
+  <div class="box box-warn">
+    <strong>CTL vs LTL incomparability:</strong> <code>G(F p)</code> ("p holds infinitely often on every trace") is an LTL property not expressible in CTL. <code>AG(EF p)</code> is a CTL property not expressible in LTL. They are different logics — neither subsumes the other.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ EXAM ═══════════════════════════ -->
+<section id="exam">
+  <div class="section-label">All FM lectures</div>
+  <h2>Exam Patterns 2018–2025 <span class="star">⭐</span></h2>
+
+  <div class="box box-exam">
+    <strong>FM1–FM2: Program Graphs (appears every year)</strong>
+    <ul style="margin-top:6px">
+      <li>Draw the program graph for a given GCL program.</li>
+      <li>Trace execution step-by-step from a given initial memory, writing each configuration.</li>
+      <li>Determine whether a given program graph is deterministic. Justify using the domain-intersection condition.</li>
+      <li>Compute S[[α]](σ) for specific actions and memories.</li>
+    </ul>
+  </div>
+
+  <div class="box box-exam">
+    <strong>FM4: Hoare Logic (appears every year, heavy weighting)</strong>
+    <ul style="margin-top:6px">
+      <li>Prove a Hoare triple {P} C {Q} using the proof rules — show each rule application explicitly.</li>
+      <li>Find a loop invariant for a given loop program.</li>
+      <li>Read or complete a proof outline (annotated program with predicates between statements).</li>
+      <li>Apply the assignment rule backwards: given Q, compute Q[a/x] for the precondition.</li>
+      <li>Apply the consequence rule to adapt pre/postconditions.</li>
+    </ul>
+  </div>
+
+  <div class="box box-exam">
+    <strong>FM5: Security (appears frequently)</strong>
+    <ul style="margin-top:6px">
+      <li>Determine if one variable interferes with another — find a concrete counterexample pair (σ₁, σ₂).</li>
+      <li>Apply security type rules to classify a program as secure or insecure.</li>
+      <li>Identify implicit information flows in conditional branches.</li>
+      <li>Set up the two-copy Hoare triple for a non-interference proof.</li>
+    </ul>
+  </div>
+
+  <div class="box box-exam">
+    <strong>FM7: LTL &amp; Büchi (appears in recent years)</strong>
+    <ul style="margin-top:6px">
+      <li>Translate English properties into LTL formulas using G, F, X, U.</li>
+      <li>Check whether a given transition system satisfies an LTL formula — give a witness or counterexample lasso.</li>
+      <li>Describe the Büchi acceptance condition: visits F infinitely often.</li>
+      <li>Note: 2024 exam used LTL over finite traces — check the exact semantics given in the exam statement.</li>
+    </ul>
+  </div>
+
+  <div class="box box-key">
+    <strong>Tools used in the course (all-aid exams):</strong>
+    fm4fun (program graph simulation), inspectify (Hoare logic checker), chip (non-interference), moka (LTL model checker).
+    Knowing what each tool does helps interpret and answer exam questions.
+  </div>
+</section>
+
+<!-- ═══════════════════════════ TAKEAWAYS ═══════════════════════════ -->
+<section id="takeaways">
+  <div class="section-label">Summary</div>
+  <h2>Key Takeaways</h2>
+
+  <div class="takeaway">
+    <div class="takeaway-n">1</div>
+    <div class="takeaway-body">
+      <strong>The program graph is the foundation of everything.</strong>
+      Nodes = control locations; edges = actions; configurations = (node, memory) pairs; execution = firing edges.
+      Every other concept — operational semantics, Hoare logic, security, model checking — builds on this model.
+      If you can draw a program graph and trace its execution, you understand the course's core.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-n">2</div>
+    <div class="takeaway-body">
+      <strong>Hoare triples {P} C {Q} are the language of correctness.</strong>
+      A triple is a contract. The five proof rules (skip, assign, seq, cond, cons) let you verify contracts structurally — one construct at a time. The <strong>assignment rule's backward substitution Q[a/x]</strong> is tested in nearly every exam.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-n">3</div>
+    <div class="takeaway-body">
+      <strong>Loop invariants are the creative heart of Hoare logic.</strong>
+      The three-condition checklist (P⊨I, {I∧b}C{I}, I∧¬b⊨Q) is mechanical once you have the invariant. Finding it is the skill. Ask: what is always true at the loop head? Usually it expresses "partial progress" — e.g., y·x! = n! for factorial.
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-n">4</div>
+    <div class="takeaway-body">
+      <strong>Non-interference = secrets don't affect public outputs.</strong>
+      Varying a secret variable should not change a public output. The two-copy technique encodes this as a Hoare triple. Type systems enforce it statically: High-level expressions cannot be assigned to Low-level variables, and cannot appear in guards controlling writes to Low variables (implicit flows).
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-n">5</div>
+    <div class="takeaway-body">
+      <strong>LTL + Büchi automata = automated verification of temporal properties.</strong>
+      G(p) = always p; F(p) = eventually p; G(F p) = infinitely often p; G(p→F q) = every p is eventually followed by q.
+      Model checking finds violations as <em>lassos</em> — giving you a concrete, debuggable counterexample trace.
+    </div>
+  </div>
+
+  <p style="margin-top:2rem; color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:11px; text-align:center;">
+    DTU 02141 &middot; FM1–FM7 &middot; Based on slides by Alberto Lluch Lafuente &amp; Christoph Matheja<br>
+    Past exams reviewed: May 2018 &middot; 2019 &middot; 2020 &middot; 2021 &middot; 2022 &middot; 2023 &middot; 2024 &middot; 2025
+  </p>
+</section>
+
+</div><!-- end container -->
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => {
+          l.style.color = '';
+          l.style.borderColor = '';
+          l.style.background = '';
+        });
+        const link = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (link) {
+          link.style.color = 'var(--accent)';
+          link.style.borderColor = 'var(--accent)';
+          link.style.background = 'rgba(79,156,249,0.08)';
+        }
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
