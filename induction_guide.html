@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathematical & Structural Induction – 02141 Study Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #f0c060;
+    --green: #3ec97e;
+    --red: #f06070;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --text: #d6dde8;
+    --muted: #6b7891;
+    --heading: #eef2f8;
+    --star: #f0c060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.8;
+    padding: 0 0 100px 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 9px 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav-brand {
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-right: 6px;
+    letter-spacing: 0.04em;
+  }
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  nav a:hover { background: var(--surface); border-color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1220 0%, #111827 40%, #0f1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 52px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(79,156,249,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid rgba(79,156,249,0.4);
+    border-radius: 4px;
+    padding: 3px 10px;
+    margin-bottom: 16px;
+    letter-spacing: 0.06em;
+  }
+  .hero h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.2;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .hero p {
+    color: var(--muted);
+    max-width: 680px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .hero-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .chip.green { color: var(--green); border-color: rgba(62,201,126,0.3); background: rgba(62,201,126,0.07); }
+  .chip.gold  { color: var(--accent2); border-color: rgba(240,192,96,0.3); background: rgba(240,192,96,0.07); }
+  .chip.blue  { color: var(--accent); border-color: rgba(79,156,249,0.3); background: rgba(79,156,249,0.07); }
+
+  /* ── LAYOUT ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-top: 56px;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--heading);
+    margin: 28px 0 10px;
+  }
+
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  li { margin-bottom: 6px; }
+
+  /* ── STAR FLAG ── */
+  .star {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--star);
+    background: rgba(240,192,96,0.1);
+    border: 1px solid rgba(240,192,96,0.3);
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── CODE / FORMULA ── */
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85em;
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .formula-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.86rem;
+    line-height: 1.9;
+    white-space: pre;
+    overflow-x: auto;
+    color: #c9d4e8;
+  }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border: 1px solid;
+  }
+  .callout-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .callout.info    { background: rgba(79,156,249,0.07); border-color: rgba(79,156,249,0.3); }
+  .callout.info .callout-title { color: var(--accent); }
+  .callout.info p, .callout.info li { color: #9fc4f5; }
+  .callout.warn    { background: rgba(240,192,96,0.07); border-color: rgba(240,192,96,0.3); }
+  .callout.warn .callout-title { color: var(--accent2); }
+  .callout.warn p, .callout.warn li { color: #d4aa6a; }
+  .callout.success { background: rgba(62,201,126,0.07); border-color: rgba(62,201,126,0.3); }
+  .callout.success .callout-title { color: var(--green); }
+  .callout.success p, .callout.success li { color: #7ecfa0; }
+
+  /* ── PROOF TEMPLATE BOX ── */
+  .proof-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin: 18px 0;
+  }
+  .proof-box .proof-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .proof-step {
+    display: flex;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .proof-step:last-child { border-bottom: none; padding-bottom: 0; }
+  .proof-step:first-of-type { padding-top: 0; }
+  .ps-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    border-radius: 4px;
+    padding: 4px 10px;
+    white-space: nowrap;
+    min-width: 130px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+  }
+  .ps-body {
+    font-size: 0.91rem;
+    line-height: 1.75;
+    color: var(--text);
+    flex: 1;
+    padding-top: 2px;
+  }
+
+  /* ── WORKED EXAMPLE ── */
+  .example-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 24px 0;
+    overflow: hidden;
+  }
+  .example-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .example-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #0f1117;
+    background: var(--accent);
+    border-radius: 4px;
+    padding: 3px 10px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .example-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--heading);
+  }
+  .example-body {
+    padding: 20px 22px;
+  }
+  .example-body p { margin-bottom: 10px; }
+  .example-body p:last-child { margin-bottom: 0; }
+
+  .step-list {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    border-top: 1px solid var(--border);
+  }
+  .step-list li {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    border-radius: 4px;
+    padding: 5px 8px;
+    text-align: center;
+    min-width: 110px;
+    width: 110px;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+  .step-body {
+    flex: 1;
+    font-size: 0.92rem;
+    line-height: 1.78;
+    color: var(--text);
+    padding-top: 2px;
+  }
+  .step-body strong { color: var(--heading); }
+  .step-body .formula-block { margin: 10px 0; }
+
+  /* ── TWO COL ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .mini-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .mini-card h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .mini-card ul { margin-bottom: 0; }
+  .mini-card li { font-size: 0.88rem; margin-bottom: 5px; }
+
+  /* ── TAG ROW ── */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 14px;
+  }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .tag.blue   { color: var(--accent); border-color: rgba(79,156,249,0.3); background: rgba(79,156,249,0.07); }
+  .tag.green  { color: var(--green);  border-color: rgba(62,201,126,0.3); background: rgba(62,201,126,0.07); }
+
+  /* ── EXAM TIPS BOX ── */
+  .exam-box {
+    background: rgba(240,192,96,0.05);
+    border: 1px solid rgba(240,192,96,0.25);
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin: 18px 0;
+  }
+  .exam-box h3 { color: var(--accent2); margin-top: 0; }
+  .exam-box li { color: #c8a866; font-size: 0.91rem; }
+  .exam-box p  { color: #c8a866; font-size: 0.91rem; }
+
+  /* ── TAKEAWAYS ── */
+  .takeaways {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 0 0 8px 8px;
+    padding: 28px 30px;
+    margin-top: 52px;
+  }
+  .takeaways h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+  .tk-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+    align-items: flex-start;
+  }
+  .tk-item:last-child { margin-bottom: 0; }
+  .tk-n {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    border-radius: 4px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .tk-text {
+    font-size: 0.92rem;
+    line-height: 1.72;
+    color: var(--text);
+    flex: 1;
+    padding-top: 3px;
+  }
+  .tk-text strong { color: var(--heading); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 32px 22px 28px; }
+    .content { padding: 0 16px; }
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    .step-num { min-width: 80px; width: 80px; }
+    .ps-label { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">02141</span>
+  <a href="#s1">integer induction</a>
+  <a href="#s2">strong induction</a>
+  <a href="#s3">structural induction</a>
+  <a href="#s4">string length</a>
+  <a href="#examples">worked examples</a>
+  <a href="#exam-tips">exam tips</a>
+  <a href="#takeaways">key takeaways</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">02141 — Computer Science Modelling · DTU</div>
+  <h1>Mathematical &amp; Structural Induction</h1>
+  <p>Induction is the proof backbone of this entire course — from regular languages and automata, to context-free grammars, to program verification. This guide covers all three flavours with fully worked examples drawn from past exam questions, and exam-writing templates you can apply directly.</p>
+  <div class="hero-chips">
+    <span class="chip blue">integer induction</span>
+    <span class="chip blue">strong induction</span>
+    <span class="chip blue">structural induction</span>
+    <span class="chip blue">induction on |w|</span>
+    <span class="chip gold">⭐ appeared 2021, 2023, 2024</span>
+    <span class="chip green">5 worked examples</span>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-label">§ 01</div>
+  <h2>Mathematical Induction (on natural numbers)</h2>
+
+  <h3>What it is and why it works</h3>
+  <p>Mathematical induction is a proof technique for statements of the form <em>"P(n) holds for every natural number n ≥ n₀"</em>. Think of it as an infinite row of dominoes: prove the first one falls (base case), and prove that whenever one falls the next one falls too (inductive step). Together they guarantee every domino eventually falls.</p>
+  <p>Formally this rests on the well-ordering principle: every non-empty set of natural numbers has a smallest element. If P failed for some n, there would be a smallest failing n — and the inductive step would produce a contradiction.</p>
+
+  <h3>Standard proof structure <span class="star">⭐ exam format</span></h3>
+  <div class="proof-box">
+    <div class="proof-header">Template — copy this structure into every integer induction proof</div>
+    <div class="proof-step">
+      <div class="ps-label">1. State P(n)</div>
+      <div class="ps-body">Let P(n) be the statement: <em>[write out the property in terms of n explicitly]</em>.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">2. Base case</div>
+      <div class="ps-body">We prove P(n₀). Verify the statement directly for n = n₀ by substitution or direct computation.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">3. Ind. hypothesis</div>
+      <div class="ps-body">Assume P(n) holds for some arbitrary n ≥ n₀. <em>[This is the I.H. — write it out as an equation or statement.]</em></div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">4. Inductive step</div>
+      <div class="ps-body">Prove P(n+1) using the I.H. Every algebraic step should be labelled: [by I.H.], [by definition], [by algebra].</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">5. Conclusion</div>
+      <div class="ps-body">By induction, P(n) holds for all n ≥ n₀. □</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">⚠ Common pitfalls</div>
+    <ul>
+      <li><strong>Forgetting to state P(n).</strong> Examiners need to see exactly what is being proved. Don't just write "by induction" — spell out P(n).</li>
+      <li><strong>Wrong base case.</strong> If the claim starts at n = 1 but you check n = 0, the whole proof collapses.</li>
+      <li><strong>Circular reasoning.</strong> Don't assume P(n+1) and derive P(n+1). You must start from P(n) and arrive at P(n+1).</li>
+      <li><strong>Unjustified algebra.</strong> Every equals sign in the inductive step needs a reason in brackets.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-label">§ 02</div>
+  <h2>Strong Induction</h2>
+
+  <h3>When to use it</h3>
+  <p>In regular induction you assume P(n) to prove P(n+1). In strong induction you assume <em>all</em> of P(0), P(1), …, P(n) to prove P(n+1). This is necessary when the proof of P(n+1) depends on a case P(k) where k &lt; n — for example when a problem breaks into two smaller sub-problems of unknown size.</p>
+
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>Use regular induction when…</h4>
+      <ul>
+        <li>P(n+1) depends only on P(n)</li>
+        <li>Typical for sum/product formulas, simple counting</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>Use strong induction when…</h4>
+      <ul>
+        <li>P(n+1) needs P(k) for some k &lt; n (not just k = n)</li>
+        <li>Recursive definitions split into two pieces of unknown size</li>
+        <li>Fibonacci-style arguments</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Proof structure</h3>
+  <div class="proof-box">
+    <div class="proof-header">Template — strong induction</div>
+    <div class="proof-step">
+      <div class="ps-label">1. State P(n)</div>
+      <div class="ps-body">Let P(n) be: <em>[property]</em>.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">2. Base case(s)</div>
+      <div class="ps-body">Verify P(n₀) and any other small cases needed before the step applies.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">3. Strong I.H.</div>
+      <div class="ps-body">Assume P(i) holds for <em>all</em> i with n₀ ≤ i ≤ n.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">4. Inductive step</div>
+      <div class="ps-body">Prove P(n+1). You may now invoke P(i) for any i ≤ n — not just P(n).</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">5. Conclusion</div>
+      <div class="ps-body">By strong induction, P(n) holds for all n ≥ n₀. □</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-label">§ 03</div>
+  <h2>Structural Induction</h2>
+
+  <h3>What it is</h3>
+  <p>Structural induction is induction over <em>recursively defined structures</em> rather than over the natural numbers. Instead of going from n to n+1, you go from sub-structures to the structures built from them. To prove a property holds for every element of a recursively defined set, prove it for all base cases, then prove it is preserved by each recursive construction rule.</p>
+
+  <div class="callout info">
+    <div class="callout-title">How structural and integer induction relate</div>
+    <p>Structural induction is a generalisation of integer induction. When you do induction on the length of a string you are really doing integer induction on |w|. Structural induction makes this explicit: the "smaller" pieces are the sub-structures given directly by the grammar rules.</p>
+  </div>
+
+  <h3>Standard proof structure <span class="star">⭐ exam format</span></h3>
+  <div class="proof-box">
+    <div class="proof-header">Template — structural induction over a grammar</div>
+    <div class="proof-step">
+      <div class="ps-label">1. State P</div>
+      <div class="ps-body">We prove by structural induction that P(x) holds for every x in the set S.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">2. Base cases</div>
+      <div class="ps-body">For each base production rule, verify P directly. One base case per base production.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">3. Inductive cases</div>
+      <div class="ps-body">For each recursive rule that builds x from smaller pieces x₁, x₂, …: assume P(x₁), P(x₂), … hold (I.H.), then prove P(x) for the newly built element. One case per recursive production.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">4. Conclusion</div>
+      <div class="ps-body">By structural induction, P(x) holds for all x ∈ S. □</div>
+    </div>
+  </div>
+
+  <h3>Where it appears in this course</h3>
+  <div class="tag-row">
+    <span class="tag blue">strings / words</span>
+    <span class="tag blue">parse trees</span>
+    <span class="tag blue">regular expressions</span>
+    <span class="tag green">context-free grammars</span>
+    <span class="tag green">derivation sequences S ⇒* w</span>
+    <span class="tag green">GCL programs</span>
+  </div>
+  <p>For a CFG, base cases match productions that derive terminal words directly (e.g. <code>S → cd</code>). Inductive cases match productions that use S recursively (e.g. <code>S → cSd</code>, <code>S → SS</code>). There is always one case per production rule.</p>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-label">§ 04</div>
+  <h2>Induction on String Length</h2>
+
+  <h3>Why strings need their own section</h3>
+  <p>Many results about automata are proved by induction on |w|. This is technically integer induction, but the argument looks different because you split words by stripping a character, not by doing arithmetic.</p>
+
+  <div class="callout success">
+    <div class="callout-title">Standard split conventions</div>
+    <ul>
+      <li><strong>Strip the last character:</strong> write w = w'a where a ∈ Σ and |w'| = |w| − 1. Most common for DFA/NFA transition function proofs.</li>
+      <li><strong>Strip the first character:</strong> write w = aw'. Sometimes used for left-to-right reading arguments.</li>
+      <li><strong>Split in two:</strong> write w = w₁w₂ where |w₁|, |w₂| &lt; |w| (requires strong induction).</li>
+    </ul>
+  </div>
+
+  <h3>Proof structure for induction on |w| <span class="star">⭐ exam format</span></h3>
+  <div class="proof-box">
+    <div class="proof-header">Template — induction on string length</div>
+    <div class="proof-step">
+      <div class="ps-label">1. State P(w)</div>
+      <div class="ps-body">We prove by induction on |w| that P(w) holds for every w ∈ Σ*.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">2. Base case w = ε</div>
+      <div class="ps-body">Verify P(ε) directly using <code>δ*(q, ε) = q</code>.</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">3. Ind. hypothesis</div>
+      <div class="ps-body">Assume P(w') holds for all words w' with |w'| = n (or: for all w' shorter than w).</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">4. Inductive step</div>
+      <div class="ps-body">Let w = w'a where a ∈ Σ and |w'| = n. By I.H., P(w') holds. Use the recursive definition of δ* to derive P(w).</div>
+    </div>
+    <div class="proof-step">
+      <div class="ps-label">5. Conclusion</div>
+      <div class="ps-body">By induction on |w|, P(w) holds for all w ∈ Σ*. □</div>
+    </div>
+  </div>
+
+  <h3>The recursive definition of δ* — memorise this <span class="star">⭐</span></h3>
+  <div class="formula-block">δ*(q, ε)   = q
+δ*(q, w'a) = δ(δ*(q, w'), a)    [for any w' ∈ Σ*, a ∈ Σ]</div>
+  <p>This recursive structure tells you exactly what the base case and inductive step must look like. The base case is always <code>w = ε</code> giving <code>δ*(q, ε) = q</code>. The inductive step always strips the last character <code>a</code> and uses the definition twice.</p>
+</div>
+
+<hr>
+
+<!-- WORKED EXAMPLES -->
+<div class="section" id="examples">
+  <div class="section-label">§ 05–09</div>
+  <h2>Worked Examples</h2>
+  <p>Every step is labelled explicitly, as it should be in an exam answer.</p>
+
+  <!-- EXAMPLE 1 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 1</span>
+      <span class="example-title">Integer induction — prove the sum formula</span>
+    </div>
+    <div class="example-body">
+      <p><strong>Claim:</strong> For all n ≥ 0, &nbsp; 0 + 1 + 2 + ⋯ + n = n(n+1)/2.</p>
+      <ul class="step-list">
+        <li>
+          <span class="step-num">Step 1<br>State P(n)</span>
+          <div class="step-body">Let P(n) be: <em>the sum 0 + 1 + ⋯ + n equals n(n+1)/2</em>. We want to show P(n) for all n ≥ 0.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 2<br>Base case</span>
+          <div class="step-body">For n = 0: the sum is 0, and 0(0+1)/2 = 0. ✓ So P(0) holds.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 3<br>Ind. hypothesis</span>
+          <div class="step-body">Assume P(n) holds for some arbitrary n ≥ 0:
+            <div class="formula-block">0 + 1 + 2 + ⋯ + n = n(n+1)/2    [I.H.]</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 4<br>Ind. step</span>
+          <div class="step-body">We prove P(n+1), i.e. 0 + 1 + ⋯ + n + (n+1) = (n+1)(n+2)/2.
+            <div class="formula-block">0 + 1 + ⋯ + n + (n+1)
+  = [0 + 1 + ⋯ + n] + (n+1)    [regrouping]
+  = n(n+1)/2 + (n+1)            [by I.H.]
+  = (n+1) · [n/2 + 1]           [factoring]
+  = (n+1)(n+2)/2                [algebra] ✓</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 5<br>Conclusion</span>
+          <div class="step-body">By induction, P(n) holds for all n ≥ 0. □</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 2 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 2</span>
+      <span class="example-title">Strong induction — every integer ≥ 8 is a sum of 3s and 5s</span>
+    </div>
+    <div class="example-body">
+      <p><strong>Claim:</strong> For all n ≥ 8, n = 3a + 5b for some a, b ≥ 0.</p>
+      <ul class="step-list">
+        <li>
+          <span class="step-num">Step 1<br>State P(n)</span>
+          <div class="step-body">Let P(n) be: n = 3a + 5b for some a, b ∈ ℕ₀.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 2<br>Base cases</span>
+          <div class="step-body">Three base cases are needed (because the step will use n−3):
+            <ul>
+              <li>P(8): 8 = 3 + 5 ✓</li>
+              <li>P(9): 9 = 3 + 3 + 3 ✓</li>
+              <li>P(10): 10 = 5 + 5 ✓</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 3<br>Strong I.H.</span>
+          <div class="step-body">Assume P(i) holds for all i with 8 ≤ i ≤ n, where n ≥ 10.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 4<br>Ind. step</span>
+          <div class="step-body">We prove P(n+1). Since n ≥ 10, (n+1) − 3 = n − 2 ≥ 8. By I.H. applied to n − 2 (which satisfies 8 ≤ n−2 ≤ n), we have n−2 = 3a + 5b. Therefore n+1 = (n−2) + 3 = 3(a+1) + 5b. ✓<br><br><em>Note: strong induction was essential — P(n+1) needed P(n−2), not P(n).</em></div>
+        </li>
+        <li>
+          <span class="step-num">Step 5<br>Conclusion</span>
+          <div class="step-body">By strong induction, every n ≥ 8 can be written as 3a + 5b. □</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 3 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 3</span>
+      <span class="example-title">Structural induction on a grammar <span class="star">⭐ 2024 exam style</span></span>
+    </div>
+    <div class="example-body">
+      <p><strong>Grammar G:</strong> &nbsp;<code>S → cd  |  cSd  |  SS</code></p>
+      <p><strong>Claim:</strong> For every word w derivable from S, |w|<sub>d</sub> ≥ |w|<sub>c</sub>, where |w|<sub>x</sub> denotes the number of occurrences of x.</p>
+      <p style="color: var(--muted); font-size: 0.87rem;">This matches the style of Question 1d from May 2024.</p>
+      <ul class="step-list">
+        <li>
+          <span class="step-num">Step 1<br>State P</span>
+          <div class="step-body">We prove by structural induction on the derivation from G that for every w with S ⇒* w (all terminals), |w|<sub>d</sub> ≥ |w|<sub>c</sub>.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 2<br>Base case<br>S → cd</span>
+          <div class="step-body">w = cd. Then |w|<sub>d</sub> = 1 and |w|<sub>c</sub> = 1, so |w|<sub>d</sub> ≥ |w|<sub>c</sub>. ✓</div>
+        </li>
+        <li>
+          <span class="step-num">Step 3<br>Ind. case<br>S → cSd</span>
+          <div class="step-body">Suppose S ⇒* w₀ and P(w₀) holds, i.e. |w₀|<sub>d</sub> ≥ |w₀|<sub>c</sub>.<br>
+          Then w = cw₀d, so |w|<sub>c</sub> = |w₀|<sub>c</sub> + 1 and |w|<sub>d</sub> = |w₀|<sub>d</sub> + 1.<br>
+          By I.H.: |w|<sub>d</sub> = |w₀|<sub>d</sub> + 1 ≥ |w₀|<sub>c</sub> + 1 = |w|<sub>c</sub>. ✓</div>
+        </li>
+        <li>
+          <span class="step-num">Step 4<br>Ind. case<br>S → SS</span>
+          <div class="step-body">Suppose S ⇒* w₁ and S ⇒* w₂ with P(w₁) and P(w₂) both holding.<br>
+          Then w = w₁w₂, so |w|<sub>d</sub> = |w₁|<sub>d</sub> + |w₂|<sub>d</sub> ≥ |w₁|<sub>c</sub> + |w₂|<sub>c</sub> = |w|<sub>c</sub>. ✓</div>
+        </li>
+        <li>
+          <span class="step-num">Step 5<br>Conclusion</span>
+          <div class="step-body">By structural induction, |w|<sub>d</sub> ≥ |w|<sub>c</sub> for every word w derivable from S. □</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 4 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 4</span>
+      <span class="example-title">Induction on |w| — the concatenation lemma for δ* <span class="star">⭐ frequently tested</span></span>
+    </div>
+    <div class="example-body">
+      <p><strong>Claim:</strong> For any DFA (Q, Σ, δ, q₀, F), any q ∈ Q, and any x, y ∈ Σ*:</p>
+      <div class="formula-block">δ*(q, xy) = δ*(δ*(q, x), y)</div>
+      <p>Plain English: reading x then y from q gives the same result as reading x from q, then reading y from wherever you land.</p>
+      <ul class="step-list">
+        <li>
+          <span class="step-num">Step 1<br>State P(y)</span>
+          <div class="step-body">We prove by induction on |y| that for all q ∈ Q and all x ∈ Σ*: <code>δ*(q, xy) = δ*(δ*(q, x), y)</code>. We fix x and induct on y.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 2<br>Base case y = ε</span>
+          <div class="step-body">
+            <div class="formula-block">δ*(q, xε) = δ*(q, x)                   [since xε = x]
+δ*(δ*(q, x), ε) = δ*(q, x)            [by def: δ*(r, ε) = r]</div>
+            Both sides equal δ*(q, x). P(ε) holds. ✓
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 3<br>Ind. hypothesis</span>
+          <div class="step-body">Assume δ*(q, xy) = δ*(δ*(q, x), y) for all q ∈ Q, all x ∈ Σ*. &nbsp;[I.H. for word y]</div>
+        </li>
+        <li>
+          <span class="step-num">Step 4<br>Ind. step y' = ya</span>
+          <div class="step-body">Let y' = ya where a ∈ Σ.
+            <div class="formula-block">δ*(q, xy')
+  = δ*(q, x(ya))
+  = δ*(q, (xy)a)                          [concatenation is associative]
+  = δ(δ*(q, xy), a)                       [def of δ*: strip last char]
+  = δ(δ*(δ*(q, x), y), a)                [by I.H.]
+  = δ*(δ*(q, x), ya)                      [def of δ*: reversed]
+  = δ*(δ*(q, x), y') ✓</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 5<br>Conclusion</span>
+          <div class="step-body">By induction on |y|, δ*(q, xy) = δ*(δ*(q, x), y) for all q, x, y. □</div>
+        </li>
+      </ul>
+      <div class="callout info" style="margin-top: 16px;">
+        <div class="callout-title">Why this lemma matters</div>
+        <p>This is the core tool for almost every induction proof about DFAs. Once proved, you can split any word at any position and reason about the two halves independently — which is exactly what Example 5 below does.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 5 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 5</span>
+      <span class="example-title">May 2023 exam — the dup function and DFA A₂ <span class="star">⭐ appeared May 2023</span></span>
+    </div>
+    <div class="example-body">
+      <p>This is drawn directly from Exercise 8 of the May 2023 exam (5% of total marks). It is the most representative exam-style induction question in this course.</p>
+
+      <p><strong>Setup.</strong> The function dup : Σ* → Σ* doubles every character:</p>
+      <div class="formula-block">dup(ε)   = ε
+dup(w'a) = dup(w') aa    [for w' ∈ Σ*, a ∈ Σ]</div>
+
+      <p>Given a DFA A = (Q, Σ, δ, q₀, F), construct DFA A₂ = (Q₂, Σ, δ₂, q₀, F) where intuitively A₂ reads each character twice before moving on. The transition function is:</p>
+      <div class="formula-block">δ₂(q, a)   = q_a        [if q ∈ Q — first occurrence, go to intermediate state]
+δ₂(q_a, a) = δ(q, a)   [if q is of the form q'_a — second occurrence, complete the move]
+δ₂(_,  _)  = q_e        [otherwise — error]</div>
+
+      <p><strong>Claim to prove:</strong> For all q ∈ Q and w ∈ Σ*:</p>
+      <div class="formula-block">δ*(q, w) = δ₂*(q, dup(w))</div>
+
+      <ul class="step-list">
+        <li>
+          <span class="step-num">Step 1<br>State P(w)</span>
+          <div class="step-body">We prove by induction on |w| that for all q ∈ Q:<br>
+          P(w): <code>δ*(q, w) = δ₂*(q, dup(w))</code>.</div>
+        </li>
+        <li>
+          <span class="step-num">Step 2<br>Base case w = ε</span>
+          <div class="step-body">
+            <div class="formula-block">δ*(q, ε) = q                    [def of δ*]
+δ₂*(q, ε) = q                   [def of δ₂*]
+δ₂*(q, dup(ε)) = δ₂*(q, ε) = q  [since dup(ε) = ε]</div>
+            Both sides equal q. P(ε) holds. ✓
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 3<br>Ind. hypothesis</span>
+          <div class="step-body">Assume P(w') holds for all q ∈ Q, i.e. δ*(q, w') = δ₂*(q, dup(w')) for all q ∈ Q. &nbsp;[I.H.]</div>
+        </li>
+        <li>
+          <span class="step-num">Step 4<br>Ind. step w = w'a</span>
+          <div class="step-body">Let w = w'a where a ∈ Σ. We show δ*(q, w'a) = δ₂*(q, dup(w'a)).
+            <div class="formula-block">Left side:
+  Let q'' = δ*(q, w') and q' = δ(q'', a).
+  Then δ*(q, w'a) = δ(δ*(q, w'), a) = δ(q'', a) = q'.    [def of δ*]
+
+Right side:
+  dup(w'a) = dup(w') aa                                    [def of dup]
+  By I.H.:   δ₂*(q, dup(w')) = δ*(q, w') = q''
+  By def δ₂: δ₂(q'', a)   = q''_a                         [first occurrence]
+  By def δ₂: δ₂(q''_a, a) = δ(q'', a) = q'               [second occurrence]
+  So:        δ₂*(q, dup(w'a)) = δ₂*(q, dup(w') aa) = q'
+
+Therefore δ*(q, w'a) = q' = δ₂*(q, dup(w'a)). ✓</div>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">Step 5<br>Conclusion</span>
+          <div class="step-body">By induction on |w|, δ*(q, w) = δ₂*(q, dup(w)) for all q ∈ Q, w ∈ Σ*.<br>
+          Setting q = q₀: δ*(q₀, w) ∈ F iff δ₂*(q₀, dup(w)) ∈ F. So A₂ accepts dup(w) iff A accepts w. □</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- EXAM TIPS -->
+<div class="section" id="exam-tips">
+  <div class="section-label">§ 10</div>
+  <h2>Exam Writing Tips</h2>
+
+  <div class="exam-box">
+    <h3>How to identify which induction to use</h3>
+    <div class="two-col" style="margin-top: 14px;">
+      <div>
+        <h4 style="color: var(--muted); font-size: 10px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;">Clues in the problem wording</h4>
+        <ul style="font-size: 0.88rem; color: #c8a866;">
+          <li><em>"…for all n ≥ 0…"</em> → integer induction</li>
+          <li><em>"…by induction on |w|…"</em> → string length</li>
+          <li><em>"…structural induction on the derivation…"</em> → grammar</li>
+          <li><em>"…every word generated by…"</em> → structural on grammar</li>
+          <li>Recursively defined function (like dup) → induct on the same recursion</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="color: var(--muted); font-size: 10px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;">Decision checklist</h4>
+        <ul style="font-size: 0.88rem; color: #c8a866;">
+          <li>Object is a natural number or has a size? → integer induction</li>
+          <li>n+1 case needs more than just n? → strong induction</li>
+          <li>Object defined by grammar / recursive rule? → structural</li>
+          <li>Word/string with function over it? → induction on |w|</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>Writing clearly in an exam <span class="star">⭐</span></h3>
+  <ul>
+    <li><strong>Always name the I.H.</strong> Write "By I.H." explicitly when you use it. Examiners need to see where it is applied.</li>
+    <li><strong>Label all three parts.</strong> Write "Induction base:" and "Induction step:" as explicit headings — don't just start computing.</li>
+    <li><strong>State P(n) or P(w) first,</strong> even if it seems obvious. This is worth marks by itself.</li>
+    <li><strong>Justify every = sign.</strong> Bracket each step: [by def of δ*], [by I.H.], [by construction of A₂], [algebra].</li>
+    <li><strong>End with a conclusion sentence.</strong> "By induction on |w|, P holds for all w ∈ Σ*. □"</li>
+    <li><strong>Match base case to step.</strong> If your step splits w = w'a, your base case must handle ε.</li>
+  </ul>
+
+  <h3>Common exam phrasings to recognise</h3>
+  <div class="formula-block">"Prove by induction on the length of w…"
+→ induction on |w|; base case w = ε; step w = w'a
+
+"By structural induction on the syntax of expression E…"
+→ base cases = atomic expressions; inductive cases = each operator
+
+"Complete the proof below by filling in the blank lines…"
+→ use the exact template the exam provides; do not invent a different structure
+
+"We first show by induction on the structure of words that…"
+→ this is the 2023 exam phrasing; it means induction on |w|</div>
+
+  <h3>Time management</h3>
+  <ul>
+    <li>Induction proofs in 02141 are typically worth 5% of the exam (e.g. Exercise 8 in 2023). Budget 8–12 minutes maximum.</li>
+    <li>If stuck on the inductive step, write the base case and the I.H. statement — these alone may earn partial credit.</li>
+    <li>The inductive step is almost always: unfold the recursion definition, apply I.H., refold. Recognise this pattern and it becomes mechanical.</li>
+  </ul>
+</div>
+
+<!-- KEY TAKEAWAYS -->
+<div class="takeaways" id="takeaways">
+  <h2>// KEY TAKEAWAYS</h2>
+  <div class="tk-item">
+    <div class="tk-n">1</div>
+    <div class="tk-text"><strong>Always write the three-part structure explicitly.</strong> State P(n) / P(w), prove the base case, state the I.H., prove the inductive step. Exams often give you the skeleton — fill each part carefully and label it. <span class="star">⭐</span></div>
+  </div>
+  <div class="tk-item">
+    <div class="tk-n">2</div>
+    <div class="tk-text"><strong>Induction on |w| mirrors the recursive definition of δ*.</strong> Base case is always w = ε with δ*(q, ε) = q. The step is always w = w'a — apply δ* to w' then δ to the last character. This pattern appeared in 2023 and is the most likely type to reappear. <span class="star">⭐</span></div>
+  </div>
+  <div class="tk-item">
+    <div class="tk-n">3</div>
+    <div class="tk-text"><strong>Structural induction has one case per production rule.</strong> List all productions. Handle base rules as base cases; for each recursive rule, assume P for the sub-derivations and prove P for the result. The 2021 and 2024 exams both used this pattern. <span class="star">⭐</span></div>
+  </div>
+  <div class="tk-item">
+    <div class="tk-n">4</div>
+    <div class="tk-text"><strong>Use strong induction when the step reaches back more than one level.</strong> The signal is a recursion that splits into two sub-parts of unknown size (like dup(w'a) = dup(w')aa). Three or more base cases are often needed.</div>
+  </div>
+  <div class="tk-item">
+    <div class="tk-n">5</div>
+    <div class="tk-text"><strong>Every equality needs a justification in brackets.</strong> [by I.H.], [by def of δ*], [by construction of A₂], [algebra] — these show the examiner you know why each step is valid and are not just asserting the conclusion. <span class="star">⭐</span></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</body>
+</html>

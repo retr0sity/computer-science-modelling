@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Checking & LTL – 02141 Study Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #f0c060;
+    --green: #3ec97e;
+    --red: #f06070;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --text: #d6dde8;
+    --muted: #6b7891;
+    --heading: #eef2f8;
+    --star: #f0c060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.8;
+    padding: 0 0 100px 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 9px 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  nav .nav-brand {
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-right: 6px;
+    letter-spacing: 0.04em;
+  }
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  nav a:hover { background: var(--surface); border-color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1220 0%, #111827 40%, #0f1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 52px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 340px; height: 340px;
+    background: radial-gradient(circle, rgba(79,156,249,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    border-radius: 4px;
+    padding: 3px 10px;
+    letter-spacing: 0.06em;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--heading);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero .subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 28px;
+  }
+
+  /* Summary box */
+  .summary-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    max-width: 780px;
+  }
+  .summary-box .summary-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .summary-box p { color: var(--text); font-size: 0.92rem; line-height: 1.75; }
+
+  /* ── MAIN CONTENT ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 28px 0;
+  }
+
+  /* Section heading */
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    margin-top: 56px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  .section-heading h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--heading);
+  }
+  .section-heading h2 .star { color: var(--star); margin-left: 6px; }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h3::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--accent2);
+    border-radius: 2px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+  }
+  .card.accent-blue  { border-left: 3px solid var(--accent); }
+  .card.accent-green { border-left: 3px solid var(--green); }
+  .card.accent-gold  { border-left: 3px solid var(--accent2); }
+  .card.accent-purple{ border-left: 3px solid var(--purple); }
+  .card.accent-red   { border-left: 3px solid var(--red); }
+  .card.accent-orange{ border-left: 3px solid var(--orange); }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  ul li {
+    padding: 4px 0 4px 22px;
+    position: relative;
+    color: var(--text);
+    font-size: 0.93rem;
+  }
+  ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.75rem;
+    top: 7px;
+  }
+  ul li ul li::before { color: var(--muted); content: '·'; top: 6px; }
+
+  /* Operator grid */
+  .op-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 18px 0;
+  }
+  @media (max-width: 640px) { .op-grid { grid-template-columns: 1fr; } }
+  .op-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .op-card .op-sym {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .op-card .op-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+  .op-card .op-plain { font-size: 0.88rem; color: var(--text); margin-bottom: 8px; }
+  .op-card .op-formal {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--purple);
+    background: rgba(167,139,250,0.07);
+    border: 1px solid rgba(167,139,250,0.15);
+    border-radius: 4px;
+    padding: 6px 10px;
+    line-height: 1.6;
+  }
+
+  /* Code / formula */
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85em;
+    background: rgba(79,156,249,0.1);
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 1px 6px;
+  }
+  .formula-block {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    color: var(--accent2);
+    line-height: 1.9;
+  }
+
+  /* Worked example */
+  .example-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .example-header {
+    background: linear-gradient(90deg, rgba(79,156,249,0.12), rgba(79,156,249,0.04));
+    border-bottom: 1px solid var(--border);
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .example-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--bg);
+    background: var(--accent);
+    border-radius: 4px;
+    padding: 3px 9px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .example-title {
+    font-weight: 600;
+    color: var(--heading);
+    font-size: 0.95rem;
+  }
+  .example-body { padding: 22px 24px; }
+
+  /* Steps */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-content { flex: 1; }
+  .step-content strong { color: var(--heading); }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 16px 0;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    text-align: left;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    letter-spacing: 0.04em;
+  }
+  td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: rgba(30,35,51,0.5); }
+
+  /* Trace check rows */
+  .trace-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+  }
+  .trace-row.pass { background: rgba(62,201,126,0.07); border: 1px solid rgba(62,201,126,0.2); }
+  .trace-row.fail { background: rgba(240,96,112,0.07); border: 1px solid rgba(240,96,112,0.2); }
+  .trace-row.neutral { background: var(--surface2); border: 1px solid var(--border); }
+  .trace-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .trace-content { flex: 1; color: var(--text); }
+  .trace-content code { font-size: 0.82em; }
+
+  /* Pill tags */
+  .pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin: 2px 3px 2px 0;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .pill-blue   { background: rgba(79,156,249,0.12); color: var(--accent); border: 1px solid rgba(79,156,249,0.25); }
+  .pill-green  { background: rgba(62,201,126,0.12); color: var(--green);  border: 1px solid rgba(62,201,126,0.25); }
+  .pill-gold   { background: rgba(240,192,96,0.12); color: var(--accent2);border: 1px solid rgba(240,192,96,0.25); }
+  .pill-purple { background: rgba(167,139,250,0.12);color: var(--purple); border: 1px solid rgba(167,139,250,0.25);}
+  .pill-red    { background: rgba(240,96,112,0.12); color: var(--red);    border: 1px solid rgba(240,96,112,0.25); }
+
+  /* Callout */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 0.88rem;
+    display: flex;
+    gap: 12px;
+  }
+  .callout.warn  { background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.25); }
+  .callout.info  { background: rgba(79,156,249,0.07); border: 1px solid rgba(79,156,249,0.2); }
+  .callout.good  { background: rgba(62,201,126,0.07); border: 1px solid rgba(62,201,126,0.2); }
+  .callout-icon  { font-size: 1.1rem; flex-shrink: 0; }
+  .callout-body  { color: var(--text); }
+  .callout-body strong { color: var(--heading); }
+
+  /* Key takeaways */
+  .takeaways {
+    background: linear-gradient(135deg, rgba(79,156,249,0.07), rgba(167,139,250,0.05));
+    border: 1px solid rgba(79,156,249,0.2);
+    border-radius: 12px;
+    padding: 28px 30px;
+    margin-top: 56px;
+  }
+  .takeaways h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .takeaway-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .takeaway-n {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: 50%;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .takeaway-text { flex: 1; font-size: 0.92rem; color: var(--text); padding-top: 4px; }
+  .takeaway-text strong { color: var(--heading); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .star-flag { color: var(--star); font-size: 1rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">02141 //</span>
+  <a href="#what-is">What is MC?</a>
+  <a href="#ltl-syntax">LTL Syntax</a>
+  <a href="#operators">Operators</a>
+  <a href="#writing">Writing Props</a>
+  <a href="#checking">Checking</a>
+  <a href="#grammar">Grammar</a>
+  <a href="#examples">Examples</a>
+  <a href="#tips">Exam Tips</a>
+  <a href="#takeaways">Takeaways</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">FM7 · Computer Science Modelling · 02141</div>
+  <h1>Model Checking &amp; <span>Linear Temporal Logic</span></h1>
+  <p class="subtitle">Lecture notes with worked examples and exam-priority flags</p>
+  <div class="summary-box">
+    <div class="summary-label">📋 Summary</div>
+    <p>
+      Model checking is an automated technique for verifying that <em>all</em> behaviours of a system satisfy a property. In this lecture we pair a <strong>Transition System (TS)</strong> — a graph of states and transitions — with an <strong>LTL formula φ</strong> that expresses what should be true about every run. LTL gives us operators to talk about <em>time</em>: what holds <em>next</em>, <em>eventually</em>, <em>always</em>, or <em>until</em> something else. These notes cover the full LTL syntax, how to write safety and liveness properties, how model checking works in practice, and the grammar rules you need for exam parse-tree questions. Past exams (2018–2025) test LTL writing and trace-checking every year — those sections are flagged ⭐.
+    </p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 1: What Is Model Checking?                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="what-is">
+    <span class="section-num">01</span>
+    <h2>What Is Model Checking? <span class="star">⭐</span></h2>
+  </div>
+
+  <div class="card accent-blue">
+    <ul>
+      <li><strong>Goal:</strong> Automatically verify that <em>every</em> possible behaviour of a system satisfies a given property — no manual proof needed.</li>
+      <li><strong>Input:</strong> A Transition System (TS) and a formula φ.</li>
+      <li><strong>Output:</strong> <code>TS ⊧ φ</code> (yes/no) — and if no, a <strong>counterexample trace</strong>.</li>
+      <li><strong>Unlike testing:</strong> Model checking covers all executions, not just sampled ones.</li>
+    </ul>
+  </div>
+
+  <h3>The Transition System (TS)</h3>
+  <div class="card accent-purple">
+    <p style="margin-bottom:12px; font-size:0.9rem; color:var(--muted);">A TS is a formal model of a system's behaviour. It has five components:</p>
+    <table>
+      <tr><th>Component</th><th>Notation</th><th>Meaning</th></tr>
+      <tr><td>States</td><td><code>S</code></td><td>All possible configurations of the system</td></tr>
+      <tr><td>Initial states</td><td><code>I ⊆ S</code></td><td>States where execution can start</td></tr>
+      <tr><td>Transition relation</td><td><code>→ ⊆ S × S</code></td><td>Which states can follow which</td></tr>
+      <tr><td>Atomic propositions</td><td><code>AP</code></td><td>Basic yes/no facts about states (e.g. <em>crit = 1</em>)</td></tr>
+      <tr><td>Labelling function</td><td><code>L : S → 2<sup>AP</sup></code></td><td>Which APs are true in each state</td></tr>
+    </table>
+  </div>
+
+  <h3>Traces</h3>
+  <div class="card accent-gold">
+    <ul>
+      <li>A <strong>path</strong> in the TS is an infinite sequence of states: s₀ → s₁ → s₂ → …</li>
+      <li>A <strong>trace</strong> is the corresponding sequence of label-sets: <code>L(s₀) L(s₁) L(s₂) …</code></li>
+      <li><code>Traces(TS)</code> = the set of all traces from all initial states.</li>
+      <li><code>TS ⊧<sub>LTL</sub> φ</code> means: <strong>every trace</strong> of TS satisfies φ.</li>
+    </ul>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-icon">💡</span>
+    <div class="callout-body"><strong>Plain English:</strong> Think of the TS as a graph where nodes are "snapshots" of the system and edges are "what can happen next." A trace is an infinite walk through this graph, recording what was true at each step. Model checking asks: "Is the property φ true on every such walk?"</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 2: LTL Syntax                               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="ltl-syntax">
+    <span class="section-num">02</span>
+    <h2>LTL Syntax <span class="star">⭐</span></h2>
+  </div>
+
+  <div class="card accent-blue">
+    <p style="margin-bottom:10px; font-size:0.9rem;">An LTL formula is built from these ingredients:</p>
+    <ul>
+      <li><strong>Atomic propositions:</strong> <code>p, q, r, …</code> — basic facts that are true or false at a given state (e.g. <code>crit=1</code>, <code>x&lt;0</code>).</li>
+      <li><strong>Truth constant:</strong> <code>tt</code> (always true), <code>ff</code> (always false).</li>
+      <li><strong>Boolean connectives:</strong> <code>¬φ</code>, <code>φ₁ ∧ φ₂</code>, <code>φ₁ ∨ φ₂</code>, <code>φ₁ → φ₂</code></li>
+      <li><strong>Temporal operators:</strong> <code>Xφ</code>, <code>Fφ</code>, <code>Gφ</code>, <code>φ₁ U φ₂</code></li>
+    </ul>
+  </div>
+
+  <h3 id="operators">The Four Temporal Operators</h3>
+
+  <div class="op-grid">
+    <div class="op-card">
+      <div class="op-sym">Xφ</div>
+      <div class="op-name">Next</div>
+      <div class="op-plain">φ holds in the <em>very next</em> state on the trace.</div>
+      <div class="op-formal">π, i ⊧ Xφ  iff  π, i+1 ⊧ φ</div>
+    </div>
+    <div class="op-card">
+      <div class="op-sym">Fφ</div>
+      <div class="op-name">Finally / Eventually</div>
+      <div class="op-plain">φ holds at <em>some</em> future state (possibly now).</div>
+      <div class="op-formal">π, i ⊧ Fφ  iff  ∃j ≥ i. π, j ⊧ φ</div>
+    </div>
+    <div class="op-card">
+      <div class="op-sym">Gφ</div>
+      <div class="op-name">Globally / Always</div>
+      <div class="op-plain">φ holds at <em>every</em> state from now on — forever.</div>
+      <div class="op-formal">π, i ⊧ Gφ  iff  ∀j ≥ i. π, j ⊧ φ</div>
+    </div>
+    <div class="op-card">
+      <div class="op-sym">φ₁ U φ₂</div>
+      <div class="op-name">Until</div>
+      <div class="op-plain">φ₁ holds <em>continuously</em> until φ₂ <em>eventually</em> holds (φ₂ must come).</div>
+      <div class="op-formal">∃j ≥ i. π,j ⊧ φ₂  ∧  ∀k∈[i,j). π,k ⊧ φ₁</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body"><strong>Common mistake:</strong> With <code>U</code>, φ₂ <em>must eventually hold</em>. You can't just have φ₁ forever — that would require <code>Gφ₁</code>. Also don't confuse <code>F</code> ("at least once") with <code>G</code> ("every time").</div>
+  </div>
+
+  <h3>Derived Operators</h3>
+  <div class="card accent-green">
+    <ul>
+      <li><code>Fφ  =  tt U φ</code> &nbsp;—&nbsp; "true until φ" = φ eventually holds.</li>
+      <li><code>Gφ  =  ¬F¬φ</code> &nbsp;—&nbsp; "it never eventually becomes not-φ" = φ always holds.</li>
+    </ul>
+    <p style="margin-top:10px; font-size:0.87rem; color:var(--muted);">These mean you only <em>strictly need</em> U and ¬ — F and G are shorthand.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 3: Writing Properties in LTL                -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="writing">
+    <span class="section-num">03</span>
+    <h2>Writing Properties in LTL <span class="star">⭐</span></h2>
+  </div>
+
+  <p style="margin-bottom: 20px; font-size:0.9rem; color:var(--muted);">Most properties fall into a small number of <em>patterns</em>. Recognising the pattern is the fastest route to the right formula.</p>
+
+  <table>
+    <tr><th>Pattern</th><th>Natural Language</th><th>LTL Formula</th></tr>
+    <tr><td><span class="pill pill-red">Safety</span></td><td>"Bad thing never happens"</td><td><code>G ¬bad</code></td></tr>
+    <tr><td><span class="pill pill-green">Liveness</span></td><td>"Good thing eventually happens"</td><td><code>F good</code></td></tr>
+    <tr><td><span class="pill pill-green">Repeated liveness</span></td><td>"Good thing happens infinitely often"</td><td><code>GF good</code></td></tr>
+    <tr><td><span class="pill pill-blue">Response</span></td><td>"Whenever request, eventually response"</td><td><code>G(request → F response)</code></td></tr>
+    <tr><td><span class="pill pill-gold">Mutual exclusion</span></td><td>"Two processes never both in crit section"</td><td><code>G ¬(crit₁ ∧ crit₂)</code></td></tr>
+    <tr><td><span class="pill pill-purple">Progress</span></td><td>"Wanting to enter implies eventually entering"</td><td><code>G(want → F crit)</code></td></tr>
+  </table>
+
+  <h3>How to Read an LTL Formula Aloud</h3>
+  <div class="card accent-blue">
+    <ul>
+      <li>Start from the <strong>outermost operator</strong> and work inward.</li>
+      <li><code>G(p → Fq)</code> → "Always: if p holds, then eventually q holds."</li>
+      <li><code>GF p</code> → "Always eventually p" = "p happens infinitely often."</li>
+      <li><code>FG p</code> → "Eventually always p" = "p is true from some point on forever."</li>
+      <li><code>G ¬(a ∧ b)</code> → "It is never the case that both a and b are true at the same time."</li>
+    </ul>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-icon">🗣</span>
+    <div class="callout-body"><strong>Translation trick:</strong> Replace G with "always", F with "eventually", X with "in the next step", and U with "until". Then read left-to-right. Practice this until it's automatic — exam questions often ask you to translate in both directions.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 4: How Model Checking Works                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="checking">
+    <span class="section-num">04</span>
+    <h2>How Model Checking Works <span class="star">⭐</span></h2>
+  </div>
+
+  <div class="card accent-green">
+    <ul>
+      <li>To verify <code>TS ⊧ φ</code>: check that <strong>ALL</strong> traces satisfy φ.</li>
+      <li>To find a <strong>counterexample</strong> (a trace that violates φ): check <code>TS ⊧ ¬φ</code>. If this holds, then some trace satisfies ¬φ — i.e., violates φ.</li>
+      <li>Counterexamples in LTL always have the shape of a <strong>lasso</strong>: a finite prefix followed by an infinite loop.</li>
+    </ul>
+  </div>
+
+  <h3>Witnesses and Counterexamples</h3>
+  <div class="card accent-purple">
+    <ul>
+      <li>A <strong>witness</strong> shows why a formula holds. For existential properties it's a single trace; for universal (<code>G</code>) properties it's the whole TS.</li>
+      <li>A <strong>counterexample</strong> shows why a formula fails — just one violating lasso suffices.</li>
+      <li>LTL model checking has <strong>explainability built in</strong>: the tool always gives you a counterexample when it fails.</li>
+    </ul>
+  </div>
+
+  <h3>The State Explosion Problem</h3>
+  <div class="card accent-red">
+    <ul>
+      <li>The TS can be <strong>exponentially large</strong> in the number of concurrent processes or variables.</li>
+      <li>n boolean variables → up to 2ⁿ states.</li>
+      <li>This is the main practical limitation. Techniques like symbolic model checking, abstraction, and partial-order reduction help manage it.</li>
+    </ul>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 5: LTL Grammar (Exam-Critical)              -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="grammar">
+    <span class="section-num">05</span>
+    <h2>LTL Grammar <span class="star">⭐</span></h2>
+  </div>
+
+  <p style="margin-bottom: 16px; font-size:0.9rem; color:var(--muted);">The exam often asks you to draw a parse tree for an LTL formula using the course grammar and resolve ambiguity using precedence rules.</p>
+
+  <h3>The Course Grammar</h3>
+  <div class="formula-block">
+F → tt | A | !F | F &amp; F | XF | GF | F U F | [F]
+  </div>
+  <ul style="margin-bottom:16px;">
+    <li><code>A</code> stands for any atomic proposition.</li>
+    <li><code>[F]</code> means parentheses (explicit grouping).</li>
+    <li>This grammar is <strong>ambiguous</strong> — the same string can have two parse trees.</li>
+  </ul>
+
+  <h3>Precedence Rules (highest binds tightest → lowest)</h3>
+  <div class="card accent-gold">
+    <table>
+      <tr><th>Priority</th><th>Operator</th><th>Mnemonic</th></tr>
+      <tr><td>1 (tightest)</td><td><code>!</code> (negation)</td><td>Unary, always binds first</td></tr>
+      <tr><td>2</td><td><code>&amp;</code> (and)</td><td>Like multiplication</td></tr>
+      <tr><td>3</td><td><code>X</code> (next)</td><td></td></tr>
+      <tr><td>4</td><td><code>G</code> (always)</td><td></td></tr>
+      <tr><td>5 (loosest)</td><td><code>U</code> (until)</td><td>Binds last without brackets</td></tr>
+    </table>
+    <p style="margin-top:12px; font-size:0.85rem; color:var(--muted);">Both <code>&amp;</code> and <code>U</code> are <strong>left-associative</strong>: <code>a U b U c</code> parses as <code>(a U b) U c</code>.</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-icon">⚠️</span>
+    <div class="callout-body"><strong>Exam tip:</strong> When drawing a parse tree, first identify the <em>loosest</em> (lowest-priority) operator that isn't inside brackets — that becomes the root. Then recurse on each sub-formula. Always check associativity when the same operator appears twice.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 6: Worked Examples                          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="examples">
+    <span class="section-num">06</span>
+    <h2>Worked Examples</h2>
+  </div>
+
+  <!-- Example 1 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 1</span>
+      <span class="example-title">Reading LTL — Translating and checking a formula on a trace</span>
+    </div>
+    <div class="example-body">
+      <p style="margin-bottom:18px; font-size:0.9rem; color:var(--muted);">
+        <strong>Task:</strong> Given the formula <code>G(p → F q)</code> and the trace
+        <code>π = {p} · {p} · {q} · {p} · {q} · {q} · …</code> (assume it repeats), determine if π satisfies the formula.
+      </p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Parse the formula — identify the outermost operator.</strong><br>
+          The outermost is <code>G</code>, applied to <code>(p → F q)</code>.<br>
+          Inside: an implication with left-hand side <code>p</code> and right-hand side <code>F q</code>.
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Translate to English.</strong><br>
+          <code>G(p → F q)</code> = "Always: if p holds, then eventually q holds."<br>
+          In other words: every time you see p in the trace, q must appear at some point afterwards (or now).
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Check the trace position by position.</strong><br>
+          We only need to check positions where <code>p</code> holds (the implication is vacuously true otherwise).
+          <div style="margin-top:12px;">
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>i = 0:</strong> label = <code>{p}</code>. p holds here. Is there a future j with <code>q ∈ L(sⱼ)</code>? Yes — j=2 has label <code>{q}</code>. ✓</div>
+            </div>
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>i = 1:</strong> label = <code>{p}</code>. p holds. Next q is at i=2. ✓</div>
+            </div>
+            <div class="trace-row neutral">
+              <span class="trace-icon">⬜</span>
+              <div class="trace-content"><strong>i = 2:</strong> label = <code>{q}</code>. p does <em>not</em> hold. Implication is vacuously satisfied. ✓</div>
+            </div>
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>i = 3:</strong> label = <code>{p}</code>. p holds. Next q is at i=4. ✓</div>
+            </div>
+          </div>
+          The pattern repeats: every p is followed by a q. The formula <strong>holds</strong> on this trace. ✓
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 2 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 2</span>
+      <span class="example-title">Writing LTL — "x cannot be negative for more than two states in a row"</span>
+    </div>
+    <div class="example-body">
+      <p style="margin-bottom:18px; font-size:0.9rem; color:var(--muted);">
+        <strong>Task:</strong> Express the constraint using only the atomic proposition <code>x&lt;0</code>.
+      </p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Think about what the violation looks like.</strong><br>
+          A violation is: three consecutive states where <code>x&lt;0</code> is true.<br>
+          In LTL terms: at some position i, we have <code>x&lt;0</code> at i, i+1, and i+2.
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Build the formula to rule out the violation.</strong><br>
+          "If x&lt;0 now AND x&lt;0 in the next state, then x&lt;0 must be false two steps from now."
+          <div class="formula-block">G ( (x&lt;0 ∧ X x&lt;0) → XX ¬x&lt;0 )</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Verify the formula captures the right meaning.</strong><br>
+          <ul>
+            <li>The G says: check this at every position.</li>
+            <li>The antecedent <code>x&lt;0 ∧ X x&lt;0</code> is true exactly when we've seen two consecutive negatives.</li>
+            <li>The consequent <code>XX ¬x&lt;0</code> forces the third step to be non-negative.</li>
+            <li>Result: you can have at most 2 consecutive negative states.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 3 -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 3</span>
+      <span class="example-title">Mutual Exclusion — Writing safety and liveness, then checking a trace</span>
+    </div>
+    <div class="example-body">
+      <p style="margin-bottom:18px; font-size:0.9rem; color:var(--muted);">
+        <strong>Scenario:</strong> Two processes compete for a critical section. We have atomic propositions <code>crit₀</code>, <code>crit₁</code> (in critical section), and <code>want₀</code>, <code>want₁</code> (wanting to enter).
+      </p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Identify the atomic propositions.</strong>
+          <ul style="margin-top:8px;">
+            <li><code>crit₀</code> — process 0 is in its critical section</li>
+            <li><code>crit₁</code> — process 1 is in its critical section</li>
+            <li><code>want₀</code> — process 0 wants to enter</li>
+            <li><code>want₁</code> — process 1 wants to enter</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Write the Safety formula</strong> (mutual exclusion = "never both in crit"):
+          <div class="formula-block">G ¬(crit₀ ∧ crit₁)</div>
+          Plain English: "Always, it is not the case that both processes are simultaneously in their critical section."
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Write the Liveness formula</strong> (progress = "wanting implies eventually entering"):
+          <div class="formula-block">G ( (want₀ ∨ want₁) → F(crit₀ ∨ crit₁) )</div>
+          Plain English: "Always, if any process wants to enter, then eventually some process does enter."
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Check a candidate trace against the Safety formula.</strong><br>
+          Suppose the trace is:
+          <div class="formula-block" style="font-size:0.82rem; color: var(--text);">
+s₀: {want₀}  →  s₁: {want₀, want₁}  →  s₂: {crit₀, want₁}  →  s₃: {want₁}  →  s₄: {crit₁}  →  s₅: {} → …
+          </div>
+          <div style="margin-top:12px;">
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>s₀:</strong> <code>{want₀}</code> — neither crit. Safety holds. ✓</div>
+            </div>
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>s₁:</strong> <code>{want₀, want₁}</code> — still no crit. Safety holds. ✓</div>
+            </div>
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>s₂:</strong> <code>{crit₀, want₁}</code> — only crit₀. <code>¬(crit₀ ∧ crit₁)</code> = ¬(true ∧ false) = true. ✓</div>
+            </div>
+            <div class="trace-row pass">
+              <span class="trace-icon">✅</span>
+              <div class="trace-content"><strong>s₃–s₄:</strong> Only one process in crit at a time. Safety holds throughout. ✓</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            Now check liveness: at s₁ both processes want to enter. Does one eventually enter? Yes — s₂ has <code>crit₀</code>. At s₂, process 1 still wants: does it eventually enter? Yes — s₄ has <code>crit₁</code>. <strong>Both properties hold on this trace. ✓</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Example 4: Parse Tree -->
+  <div class="example-box">
+    <div class="example-header">
+      <span class="example-badge">EXAMPLE 4 ⭐</span>
+      <span class="example-title">Grammar — Drawing the parse tree for <code>p U q &amp; !r</code></span>
+    </div>
+    <div class="example-body">
+      <p style="margin-bottom:18px; font-size:0.9rem; color:var(--muted);">
+        <strong>Task:</strong> Parse <code>p U q &amp; !r</code> using the course grammar and precedence rules.
+      </p>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Apply precedence rules to find the root operator.</strong><br>
+          Operators present: <code>U</code> (priority 5), <code>&amp;</code> (priority 2), <code>!</code> (priority 1).<br>
+          The <em>loosest</em> operator (highest priority number = binds last) is <code>U</code> (priority 5). So <code>U</code> is the root.
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Split into left and right of <code>U</code>.</strong><br>
+          Left of U: <code>p</code><br>
+          Right of U: <code>q &amp; !r</code>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Parse the right sub-formula <code>q &amp; !r</code>.</strong><br>
+          Operators: <code>&amp;</code> (priority 2), <code>!</code> (priority 1).<br>
+          Loosest is <code>&amp;</code> → root of this sub-tree.<br>
+          Left: <code>q</code>, Right: <code>!r</code>.<br>
+          Then <code>!</code> applies to <code>r</code>.
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Final parse tree:</strong>
+          <div class="formula-block">
+        U
+       / \
+      p   &amp;
+         / \
+        q   !
+             \
+              r
+          </div>
+          So the formula means: <em>"p holds until (q AND NOT r)"</em>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 7: Exam Tips                                -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section-heading" id="tips">
+    <span class="section-num">07</span>
+    <h2>Exam-Style Tips <span class="star">⭐</span></h2>
+  </div>
+
+  <div class="card accent-orange">
+    <h3 style="margin-top:0;">Parsing an LTL Formula</h3>
+    <ul>
+      <li>Find the operator with the <strong>lowest priority</strong> (not inside brackets) — that's the root.</li>
+      <li>When in doubt: <code>U</code> is almost always the root if present at the top level.</li>
+      <li>Use brackets <code>[…]</code> to override default precedence.</li>
+      <li>Remember left-associativity: <code>a U b U c</code> = <code>(a U b) U c</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card accent-green">
+    <h3 style="margin-top:0;">Writing LTL for Natural-Language Properties</h3>
+    <ul>
+      <li>"Never X" → <code>G ¬X</code></li>
+      <li>"Eventually X" → <code>F X</code></li>
+      <li>"X always leads to Y" → <code>G(X → F Y)</code></li>
+      <li>"X infinitely often" → <code>GF X</code></li>
+      <li>"After some point, always X" → <code>FG X</code></li>
+      <li>"X until Y (and Y must come)" → <code>X U Y</code></li>
+    </ul>
+  </div>
+
+  <div class="card accent-red">
+    <h3 style="margin-top:0;">Common Mistakes to Avoid</h3>
+    <ul>
+      <li><strong>Mixing up F and G:</strong> F = "at least once", G = "every single time".</li>
+      <li><strong>Forgetting U requires φ₂ to eventually hold:</strong> <code>p U q</code> means q <em>must</em> come eventually. If q never appears, the formula is violated even if p holds forever.</li>
+      <li><strong>Confusing GF and FG:</strong> <code>GF p</code> = p infinitely often; <code>FG p</code> = p true from some point on forever. These are very different!</li>
+      <li><strong>Wrong root in parse tree:</strong> Always use precedence, not left-to-right reading, to find the root.</li>
+      <li><strong>Forgetting to check all initial states:</strong> TS ⊧ φ requires every initial state's trace to satisfy φ.</li>
+    </ul>
+  </div>
+
+  <!-- Key Takeaways -->
+  <div class="takeaways" id="takeaways">
+    <h2>🎯 Key Takeaways</h2>
+
+    <div class="takeaway-item">
+      <div class="takeaway-n">1</div>
+      <div class="takeaway-text">
+        <strong>Model checking = checking ALL traces. ⭐</strong><br>
+        <code>TS ⊧<sub>LTL</sub> φ</code> means every infinite trace from every initial state satisfies φ. A single counterexample (a lasso) is enough to refute it. The counterexample is always produced by the tool.
+      </div>
+    </div>
+
+    <div class="takeaway-item">
+      <div class="takeaway-n">2</div>
+      <div class="takeaway-text">
+        <strong>Know all four operators cold. ⭐</strong><br>
+        <code>Xφ</code> = next state; <code>Fφ</code> = some future; <code>Gφ</code> = every future; <code>φ U ψ</code> = φ holds until ψ inevitably arrives. Confusing F and G is the most common exam error.
+      </div>
+    </div>
+
+    <div class="takeaway-item">
+      <div class="takeaway-n">3</div>
+      <div class="takeaway-text">
+        <strong>Master the standard property patterns. ⭐</strong><br>
+        Safety = <code>G¬bad</code>; liveness = <code>GF good</code>; response = <code>G(req → F resp)</code>; mutual exclusion = <code>G¬(crit₀ ∧ crit₁)</code>. These templates appear on almost every exam.
+      </div>
+    </div>
+
+    <div class="takeaway-item">
+      <div class="takeaway-n">4</div>
+      <div class="takeaway-text">
+        <strong>Precedence rules resolve grammar ambiguity. ⭐</strong><br>
+        Order (tightest to loosest): <code>!</code> → <code>&amp;</code> → <code>X</code> → <code>G</code> → <code>U</code>. The loosest operator not in brackets is always the root of the parse tree. Both <code>&amp;</code> and <code>U</code> are left-associative.
+      </div>
+    </div>
+
+    <div class="takeaway-item">
+      <div class="takeaway-n">5</div>
+      <div class="takeaway-text">
+        <strong>Checking a trace manually: work position by position. ⭐</strong><br>
+        For <code>G(p → Fq)</code>, scan every position: whenever p is true, scan forward to confirm q appears. For U, confirm φ₂ <em>does</em> arrive. For F/G, check all (G) or any (F) future positions as needed.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+</body>
+</html>

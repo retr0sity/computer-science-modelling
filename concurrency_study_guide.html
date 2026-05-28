@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02141 — Concurrency Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2538;
+    --border: #2a3250;
+    --accent: #5b8dee;
+    --accent2: #e05c7a;
+    --accent3: #4ecdb4;
+    --accent4: #f0a04b;
+    --star: #f5c842;
+    --text: #d4daf0;
+    --text-dim: #7a86aa;
+    --text-bright: #eef1fb;
+    --code-bg: #0d1420;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* ── Layout ── */
+  .wrapper { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── Header ── */
+  header {
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .course-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  header h1 span { color: var(--accent); }
+  .summary-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--text-dim);
+  }
+  .summary-box strong { color: var(--text-bright); }
+
+  /* ── Table of Contents ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+  .toc h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); }
+
+  /* ── Section headings ── */
+  .section { margin-bottom: 56px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  h2.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3.sub-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent3);
+    margin: 28px 0 12px;
+  }
+  h4.mini-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--accent4);
+    margin: 20px 0 8px;
+  }
+
+  p { margin-bottom: 14px; }
+
+  /* ── Bullet lists ── */
+  ul.notes-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+  ul.notes-list li {
+    padding: 6px 0 6px 22px;
+    position: relative;
+    color: var(--text);
+    font-size: 15.5px;
+  }
+  ul.notes-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+    top: 9px;
+  }
+  ul.notes-list li.warn::before { color: var(--accent2); }
+  ul.notes-list li.good::before { color: var(--accent3); }
+
+  /* ── Star flag ── */
+  .star { color: var(--star); margin-left: 4px; }
+  .exam-flag {
+    display: inline-block;
+    background: rgba(245,200,66,0.12);
+    border: 1px solid rgba(245,200,66,0.35);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--star);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── Code blocks ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 18px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #c9d1f5;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #a8c5f7;
+  }
+  .kw { color: #e0a0f5; }
+  .cmt { color: #556080; font-style: italic; }
+  .num { color: #f0c07a; }
+  .op { color: var(--accent3); }
+  .node { color: var(--accent4); }
+  .action { color: #f07aa0; }
+
+  /* ── Info boxes ── */
+  .box {
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .box-definition {
+    background: rgba(91,141,238,0.08);
+    border: 1px solid rgba(91,141,238,0.3);
+  }
+  .box-warning {
+    background: rgba(224,92,122,0.08);
+    border: 1px solid rgba(224,92,122,0.3);
+  }
+  .box-good {
+    background: rgba(78,205,180,0.08);
+    border: 1px solid rgba(78,205,180,0.3);
+  }
+  .box-exam {
+    background: rgba(245,200,66,0.07);
+    border: 1px solid rgba(245,200,66,0.3);
+  }
+  .box-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .box-definition .box-title { color: var(--accent); }
+  .box-warning .box-title { color: var(--accent2); }
+  .box-good .box-title { color: var(--accent3); }
+  .box-exam .box-title { color: var(--star); }
+
+  /* ── Two-column comparison ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 18px 0;
+  }
+  @media(max-width: 600px) { .compare { grid-template-columns: 1fr; } }
+  .compare-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .compare-col h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .compare-col.async h4 { color: var(--accent4); }
+  .compare-col.sync h4 { color: var(--accent3); }
+
+  /* ── Step-by-step walkthrough ── */
+  .walkthrough { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 28px;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-body h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  /* ── Execution sequence table ── */
+  .exec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin: 18px 0;
+  }
+  .exec-table th {
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .exec-table td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .exec-table tr:nth-child(even) td { background: rgba(30,37,56,0.5); }
+  .exec-table tr.bad-row td { background: rgba(224,92,122,0.12); }
+  .exec-table tr.good-row td { background: rgba(78,205,180,0.08); }
+  .exec-table tr.highlight td { background: rgba(91,141,238,0.12); }
+
+  /* ── Key takeaways ── */
+  .takeaways {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-top: 48px;
+  }
+  .takeaways h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+  }
+  .takeaway-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .tk-num {
+    flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .tk-text { font-size: 15.5px; }
+  .tk-text strong { color: var(--text-bright); }
+
+  /* ── Exam tips section ── */
+  .exam-tip {
+    background: var(--surface);
+    border: 1px solid rgba(245,200,66,0.25);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .exam-tip-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--star);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Animation ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .section { animation: fadeUp 0.4s ease both; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header>
+  <div class="course-tag">02141 · Computer Science Modelling · DTU</div>
+  <h1>Concurrency<br><span>Study Guide</span></h1>
+  <div class="summary-box">
+    <strong>What this guide covers:</strong> This guide covers Chapter 8 of <em>Formal Methods — An Appetizer</em> (Nielson &amp; Nielson). Concurrency appears in virtually every exam paper and is assessed both through writing execution sequences and arguing safety/liveness. Master the mechanics of <code>par/rap</code>, the Bakery Algorithm, race conditions, and channel-based communication. <span class="star">⭐</span> marks high-frequency exam topics.
+  </div>
+</header>
+
+<!-- ══════════════════ TOC ══════════════════ -->
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1">What is Concurrency?</a></li>
+    <li><a href="#s2">Guarded Commands with Concurrency — par/rap</a></li>
+    <li><a href="#s3">Shared Variables &amp; Race Conditions</a></li>
+    <li><a href="#s4">Mutual Exclusion</a></li>
+    <li><a href="#s5">Asynchronous vs. Synchronous Communication</a></li>
+    <li><a href="#s6">Worked Example — Bakery Algorithm Step by Step</a></li>
+    <li><a href="#s7">Exam-Style Tips</a></li>
+    <li><a href="#takeaways">Key Takeaways</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════════════ SECTION 1 ══════════════════ -->
+<section class="section" id="s1">
+  <div class="section-label">Section 1</div>
+  <h2 class="section-title">What is Concurrency?</h2>
+
+  <p>So far in the course you have studied programs that run <em>sequentially</em> — one step at a time, one process at a time. Concurrency changes that: multiple processes run <strong>simultaneously</strong>, potentially reading and writing the same shared data, or communicating with each other over channels.</p>
+
+  <div class="box box-definition">
+    <div class="box-title">Definition</div>
+    <strong>Concurrency</strong> = a system consisting of several processes that execute <em>in parallel</em> and interact by exchanging information — either through shared memory or over channels.
+  </div>
+
+  <h3 class="sub-title">Why Concurrency Is Hard</h3>
+  <ul class="notes-list">
+    <li>The order in which the individual steps of different processes execute is <strong>non-deterministic</strong> — we cannot predict it in advance.</li>
+    <li>This creates an enormous space of possible <strong>interleavings</strong>: if two processes each have <em>n</em> steps, there can be exponentially many orderings.</li>
+    <li>A program might work correctly in 99.9% of interleavings, but break in one rare ordering — making bugs extremely hard to reproduce or test.</li>
+    <li>Classic problems include <strong>race conditions</strong> (two processes clobber each other's data) and <strong>deadlock</strong> (processes wait for each other forever).</li>
+  </ul>
+
+  <h3 class="sub-title">The Two Main Models <span class="star">⭐</span></h3>
+  <div class="compare">
+    <div class="compare-col async">
+      <h4>Shared Variables</h4>
+      <ul class="notes-list">
+        <li>Processes communicate by reading/writing a common memory.</li>
+        <li>Simple to program but dangerous — no built-in coordination.</li>
+        <li>Used in the <code>par/rap</code> construct of GCL.</li>
+      </ul>
+    </div>
+    <div class="compare-col sync">
+      <h4>Channel-Based Communication</h4>
+      <ul class="notes-list">
+        <li>Processes send/receive values over named channels (<code>c!a</code>, <code>c?x</code>).</li>
+        <li>Can be <em>asynchronous</em> (buffered) or <em>synchronous</em> (hand-shake).</li>
+        <li>More structured; no shared memory needed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 2 ══════════════════ -->
+<section class="section" id="s2">
+  <div class="section-label">Section 2</div>
+  <h2 class="section-title">Guarded Commands with Concurrency — par/rap <span class="star">⭐</span></h2>
+
+  <h3 class="sub-title">Syntax</h3>
+  <p>The GCL language is extended with a new top-level program construct:</p>
+  <pre><span class="kw">par</span>
+  C<sub>1</sub>
+<span class="op">[]</span>
+  C<sub>2</sub>
+<span class="op">[]</span>
+  ...
+<span class="op">[]</span>
+  C<sub>n</sub>
+<span class="kw">rap</span></pre>
+
+  <ul class="notes-list">
+    <li><code>par ... rap</code> launches <em>n</em> concurrent processes.</li>
+    <li>Each <code>C<sub>i</sub></code> between <code>[]</code> separators is an independent process.</li>
+    <li>The processes share the same memory (shared variables).</li>
+    <li>There must be at least one process (<em>n ≥ 1</em>).</li>
+    <li>Each <code>C<sub>i</sub></code> is written in ordinary GCL (with <code>do...od</code>, <code>if...fi</code>, etc.).</li>
+  </ul>
+
+  <h3 class="sub-title">Program Graphs — One Per Process <span class="star">⭐</span></h3>
+  <p>To give semantics to <code>par C₁ [] ... [] Cₙ rap</code>, we construct <em>n separate, disjoint program graphs</em> — one for each process — exactly as we did in Chapters 1–2, but making sure all node names are distinct across graphs.</p>
+
+  <ul class="notes-list">
+    <li>Graph <em>E<sub>i</sub></em> has its own start node <em>q<sub>i</sub><sup>⊳</sup></em> and end node <em>q<sub>i</sub><sup>◁</sup></em>.</li>
+    <li>The nodes of different graphs are kept completely separate.</li>
+    <li>Edges encode the same actions (<code>skip</code>, assignments, guards) as before.</li>
+  </ul>
+
+  <h3 class="sub-title">Configurations — The New State Format <span class="star">⭐</span></h3>
+  <p>In a single-process program, a configuration was <code>⟨q; σ⟩</code> — one node and one memory. With <em>n</em> processes we need to track <em>where every process is</em>:</p>
+
+  <div class="box box-definition">
+    <div class="box-title">Configuration (Shared Variables)</div>
+    <strong>⟨q₁ q₂ ⋯ qₙ ; σ⟩</strong>
+    <ul class="notes-list" style="margin-top:10px">
+      <li><em>q<sub>i</sub></em> is the current node of process <em>i</em> in its own program graph.</li>
+      <li><em>σ</em> is the shared memory (a single memory for all processes).</li>
+    </ul>
+  </div>
+
+  <h3 class="sub-title">Execution Steps — Interleaving Semantics <span class="star">⭐</span></h3>
+  <p>At each step, <strong>exactly one process moves</strong>. If process <em>i</em> has an edge <em>(q<sub>i</sub><sup>○</sup>, α, q<sub>i</sub><sup>●</sup>)</em> and action <em>α</em> is enabled in memory <em>σ</em>, then:</p>
+
+  <pre><span class="node">⟨q₁ ⋯ q<sub>i</sub><sup>○</sup> ⋯ qₙ ; σ⟩</span>  <span class="action">─α→</span>  <span class="node">⟨q₁ ⋯ q<sub>i</sub><sup>●</sup> ⋯ qₙ ; σ'⟩</span>
+  <span class="cmt">    only process i moves       all other q's unchanged</span></pre>
+
+  <ul class="notes-list">
+    <li>All other process nodes <em>q<sub>j</sub></em> (j ≠ i) remain exactly as they were.</li>
+    <li>The memory <em>σ</em> is updated to <em>σ'</em> according to the semantics of <em>α</em> (as always).</li>
+    <li>This is the <strong>interleaving semantics</strong>: concurrency is modelled as non-deterministic sequential interleaving.</li>
+    <li>An <strong>execution sequence</strong> is a chain of such steps starting from the initial configuration <code>⟨q₁⊳ q₂⊳ ⋯ qₙ⊳ ; σ₀⟩</code>.</li>
+  </ul>
+
+  <div class="box box-warning">
+    <div class="box-title">Key Insight</div>
+    At any step, the scheduler picks <em>any</em> enabled process to move. We do not control or predict this choice — hence the non-determinism.
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 3 ══════════════════ -->
+<section class="section" id="s3">
+  <div class="section-label">Section 3</div>
+  <h2 class="section-title">Shared Variables &amp; Race Conditions <span class="star">⭐</span></h2>
+
+  <h3 class="sub-title">What is a Race Condition?</h3>
+  <p>A <strong>race condition</strong> occurs when two or more processes access the same shared variable concurrently, and at least one of them writes to it. The final result depends on which process "wins the race" — i.e., on the interleaving order — which we cannot control.</p>
+
+  <h3 class="sub-title">Concrete Example: Alice's Sum Problem</h3>
+  <p>Alice wants to sum all values in an array A. She tries to speed this up using two threads:</p>
+  <pre><span class="kw">par</span>
+  <span class="kw">do</span> i &lt;= n <span class="op">→</span> sum := sum + A[i] ; i := i+<span class="num">1</span> <span class="kw">od</span>
+<span class="op">[]</span>
+  <span class="kw">do</span> i &lt; n <span class="op">→</span> sum := sum + A[n] ; n := n-<span class="num">1</span> <span class="kw">od</span>
+<span class="kw">rap</span></pre>
+
+  <p>Both threads read and write <code>sum</code>. Consider what happens when both reach their loop body at the same time, with <code>sum = 10</code>, <code>A[i] = 5</code>, <code>A[n] = 3</code>:</p>
+
+  <table class="exec-table">
+    <thead>
+      <tr><th>Step</th><th>Who moves</th><th>Action</th><th>sum after</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Thread 1</td><td>reads sum = 10</td><td>10</td><td>Both read old value</td></tr>
+      <tr><td>2</td><td>Thread 2</td><td>reads sum = 10</td><td>10</td><td></td></tr>
+      <tr><td>3</td><td>Thread 1</td><td>writes sum := 10+5 = 15</td><td>15</td><td></td></tr>
+      <tr class="bad-row"><td>4</td><td>Thread 2</td><td>writes sum := 10+3 = 13</td><td>13</td><td>⚠ Thread 1's update LOST!</td></tr>
+    </tbody>
+  </table>
+
+  <ul class="notes-list">
+    <li class="warn">The correct answer would be 18 (10+5+3), but we got 13 — Thread 1's addition was silently erased.</li>
+    <li>This happens because the read-then-write sequence is <strong>not atomic</strong>: another thread can intervene between the read and the write.</li>
+    <li>The problem is non-deterministic: sometimes the result is correct, sometimes not. This makes race conditions very hard to debug.</li>
+  </ul>
+
+  <div class="box box-warning">
+    <div class="box-title">Why This Is Dangerous</div>
+    In real software, race conditions can cause bank accounts to go negative, data to be corrupted, or security vulnerabilities. The key lesson: <strong>shared mutable state requires explicit coordination</strong>.
+  </div>
+</section>
+
+<!-- ══════════════════ SECTION 4 ══════════════════ -->
+<section class="section" id="s4">
+  <div class="section-label">Section 4</div>
+  <h2 class="section-title">Mutual Exclusion <span class="star">⭐</span></h2>
+
+  <p>The <strong>mutual exclusion problem</strong>: multiple concurrent processes need to access a shared resource (the <em>critical section</em>), but only one process may be in the critical section at any given time.</p>
+
+  <h3 class="sub-title">Safety and Liveness <span class="star">⭐</span></h3>
+
+  <div class="compare">
+    <div class="compare-col async">
+      <h4>⭐ Safety Property</h4>
+      <p style="font-size:14.5px">At most one process is in the critical section at any time.</p>
+      <p style="font-size:13.5px; color:var(--text-dim)">To argue: show that no reachable configuration has two processes simultaneously at their critical section nodes.</p>
+    </div>
+    <div class="compare-col sync">
+      <h4>⭐ Liveness Property</h4>
+      <p style="font-size:14.5px">If a process wants to enter the critical section, it <em>eventually</em> will (given no process stays in permanently).</p>
+      <p style="font-size:13.5px; color:var(--text-dim)">To argue: show every execution sequence eventually reaches the critical section node for any waiting process.</p>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Lamport's Bakery Algorithm <span class="star">⭐</span></h3>
+
+  <h4 class="mini-title">The Intuition</h4>
+  <p>Think of a bakery where customers take a numbered ticket and wait for their number to be called. The process with the <em>lowest ticket wins</em>. In the two-process version, each process has a shared variable <code>x1</code> or <code>x2</code> representing its ticket number. A ticket of <code>0</code> means "not interested."</p>
+
+  <h4 class="mini-title">The GCL Code</h4>
+  <pre><span class="kw">par</span>
+  <span class="kw">do</span> <span class="kw">true</span> <span class="op">→</span>
+    x1 := x2 + <span class="num">1</span> ;           <span class="cmt">-- Take a ticket (one more than Process 2's)</span>
+    <span class="kw">if</span> x2 = <span class="num">0</span> <span class="op">∨</span> x1 &lt; x2 <span class="op">→</span>   <span class="cmt">-- Wait until I have the lower ticket (or P2 has none)</span>
+      critical section<sub>1</sub>      <span class="cmt">-- CRITICAL SECTION</span>
+    <span class="kw">fi</span> ;
+    x1 := <span class="num">0</span>                  <span class="cmt">-- Give up ticket</span>
+  <span class="kw">od</span>
+<span class="op">[]</span>
+  <span class="kw">do</span> <span class="kw">true</span> <span class="op">→</span>
+    x2 := x1 + <span class="num">1</span> ;           <span class="cmt">-- Take a ticket</span>
+    <span class="kw">if</span> x1 = <span class="num">0</span> <span class="op">∨</span> x2 &lt; x1 <span class="op">→</span>   <span class="cmt">-- Wait until I have the lower ticket (or P1 has none)</span>
+      critical section<sub>2</sub>      <span class="cmt">-- CRITICAL SECTION</span>
+    <span class="kw">fi</span> ;
+    x2 := <span class="num">0</span>                  <span class="cmt">-- Give up ticket</span>
+  <span class="kw">od</span>
+<span class="kw">rap</span></pre>
+
+  <h4 class="mini-title">How it Works — Plain English</h4>
+  <ul class="notes-list">
+    <li><strong>Taking a ticket:</strong> Process 1 sets <code>x1 := x2 + 1</code>. This gives it a number <em>one higher than</em> whatever Process 2 currently holds — a simple way to get a bigger ticket.</li>
+    <li><strong>Checking priority:</strong> The guard <code>x2 = 0 ∨ x1 &lt; x2</code> reads: "I can enter the critical section if Process 2 has no ticket (x2=0) OR my ticket number is strictly lower."</li>
+    <li><strong>Waiting:</strong> If neither condition holds, the guard is <code>false</code>, so Process 1 is stuck — it cannot take the <code>if</code> branch and must wait.</li>
+    <li><strong>Releasing:</strong> After the critical section, <code>x1 := 0</code> cancels the ticket, signalling "I am no longer interested." This unblocks Process 2.</li>
+    <li><strong>Why safe?</strong> Both processes cannot both have the lower ticket: if x1 &lt; x2 then x2 &lt; x1 is false (and vice versa), so at most one can enter.</li>
+    <li><strong>Why live?</strong> A waiting process will always eventually see the other's ticket become 0 (when it exits), freeing it to enter.</li>
+  </ul>
+
+  <h4 class="mini-title">Program Graph Nodes (Process 1)</h4>
+  <table class="exec-table">
+    <thead>
+      <tr><th>Node</th><th>Meaning</th><th>Edge out / action</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>q₁⊳</td><td>Start of outer loop</td><td><code>true</code> → q₁¹</td></tr>
+      <tr><td>q₁¹</td><td>Just executed x1 := x2+1</td><td><code>x1 := x2+1</code> → q₁²</td></tr>
+      <tr><td>q₁²</td><td>Evaluating guard for critical section</td><td><code>x2=0 ∨ x1&lt;x2</code> → q₁³</td></tr>
+      <tr><td>q₁³</td><td>Inside critical section</td><td><code>E₁</code> (critical section body) → q₁⁴</td></tr>
+      <tr><td>q₁⁴</td><td>After critical section</td><td><code>x1 := 0</code> → q₁◁</td></tr>
+      <tr><td>q₁◁</td><td>End of iteration, loops back</td><td>→ q₁⊳</td></tr>
+    </tbody>
+  </table>
+
+  <p>Process 2 has the symmetric graph with <code>x2 := x1+1</code> and guard <code>x1=0 ∨ x2&lt;x1</code>.</p>
+
+  <h3 class="sub-title">Peterson's Algorithm (Mentioned in Exercises)</h3>
+  <ul class="notes-list">
+    <li>Another mutual exclusion algorithm, slightly simpler than Bakery for 2 processes.</li>
+    <li>Uses a <code>turn</code> variable as a "tiebreaker" plus <code>wants1</code>, <code>wants2</code> flags.</li>
+    <li>The guard for Process 1 to enter: <code>(turn=1) ∨ (wants2=0)</code> — "it's my turn, or Process 2 doesn't want in."</li>
+    <li>The course exercises ask you to implement it in GCL and verify safety/liveness using par4fun.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════ SECTION 5 ══════════════════ -->
+<section class="section" id="s5">
+  <div class="section-label">Section 5</div>
+  <h2 class="section-title">Asynchronous vs. Synchronous Communication <span class="star">⭐</span></h2>
+
+  <p>Beyond shared variables, GCL can be extended with <strong>channels</strong>. Two new actions are introduced:</p>
+
+  <div class="box box-definition">
+    <div class="box-title">Channel Actions</div>
+    <ul class="notes-list">
+      <li><code>c!a</code> — <strong>output</strong>: send the value of expression <em>a</em> on channel <em>c</em>.</li>
+      <li><code>c?x</code> — <strong>input</strong>: receive a value from channel <em>c</em> and assign it to variable <em>x</em>.</li>
+    </ul>
+  </div>
+
+  <div class="compare">
+    <div class="compare-col async">
+      <h4>Asynchronous (Buffered)</h4>
+      <ul class="notes-list">
+        <li>Each channel has a <strong>buffer</strong> (a queue of values).</li>
+        <li><code>c!a</code>: sender immediately appends the value to the buffer. Sender does not wait.</li>
+        <li><code>c?x</code>: receiver takes the front value from the buffer. Blocks if buffer is empty.</li>
+        <li>Configuration: <strong>⟨q⃗; σ, κ⟩</strong> where κ maps each channel to its buffer contents.</li>
+        <li>One process moves at a time (individual execution steps).</li>
+      </ul>
+    </div>
+    <div class="compare-col sync">
+      <h4>Synchronous (Handshake)</h4>
+      <ul class="notes-list">
+        <li><strong>No buffer</strong>. Sender and receiver must be ready simultaneously.</li>
+        <li>The two actions <code>c!a</code> (in process i) and <code>c?x</code> (in process j) fuse into a single <strong>joint action</strong> <code>c!a?x</code>.</li>
+        <li>Both processes advance their nodes together in one step.</li>
+        <li>Configuration: <strong>⟨q⃗; σ⟩</strong> — no buffer needed.</li>
+        <li>Two types of step: individual (one process) and joint (two processes).</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">Synchronous Execution Step Rule <span class="star">⭐</span></h3>
+  <p>For synchronous communication, when process <em>i</em> wants to send <code>c!a</code> and process <em>j</em> wants to receive <code>c?x</code>, they take a joint step:</p>
+  <pre><span class="node">⟨q₁ ⋯ q<sub>i</sub><sup>○</sup> ⋯ q<sub>j</sub><sup>○</sup> ⋯ qₙ ; σ⟩</span>  <span class="action">─c!a?x→</span>  <span class="node">⟨q₁ ⋯ q<sub>i</sub><sup>●</sup> ⋯ q<sub>j</sub><sup>●</sup> ⋯ qₙ ; σ'⟩</span>
+<span class="cmt">  provided: (q<sub>i</sub><sup>○</sup>, c!a, q<sub>i</sub><sup>●</sup>) ∈ E<sub>i</sub>  AND  (q<sub>j</sub><sup>○</sup>, c?x, q<sub>j</sub><sup>●</sup>) ∈ E<sub>j</sub>
+  result:   σ' = σ[x ↦ ⟦a⟧σ]  (x gets the value of a in memory σ)</span></pre>
+
+  <ul class="notes-list">
+    <li>The joint action <code>c!a?x</code> only appears in the <em>execution sequence</em>, not in any individual program graph.</li>
+    <li>Both processes <em>i</em> and <em>j</em> must have the matching send/receive at the right moment — if only one is ready, neither can proceed alone on that channel.</li>
+  </ul>
+
+  <h3 class="sub-title">Broadcast and Gather (Bonus)</h3>
+  <ul class="notes-list">
+    <li><code>c!!k a</code>: broadcast — sends <em>a</em> to <em>at least k</em> processes simultaneously.</li>
+    <li><code>c??k A x</code>: gather — receives from <em>at least k</em> senders simultaneously into array <em>A</em>.</li>
+    <li>These are joint actions involving more than two processes at once.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════ SECTION 6 ══════════════════ -->
+<section class="section" id="s6">
+  <div class="section-label">Section 6</div>
+  <h2 class="section-title">Worked Example — Bakery Algorithm Step by Step <span class="star">⭐</span></h2>
+
+  <p>We trace through the Bakery Algorithm with initial memory <code>σ₀ = [x1 ↦ 0, x2 ↦ 0, crit ↦ 0]</code>. We use <code>crit</code> as a counter of processes in the critical section (useful for model checking; you don't need it for the trace itself).</p>
+
+  <div class="walkthrough">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Write the par/rap Program</h4>
+        <pre><span class="kw">par</span>
+  <span class="kw">do</span> <span class="kw">true</span> <span class="op">→</span>
+    x1 := x2 + <span class="num">1</span> ;
+    <span class="kw">if</span> x2 = <span class="num">0</span> <span class="op">∨</span> x1 &lt; x2 <span class="op">→</span>
+      critical section<sub>1</sub>
+    <span class="kw">fi</span> ;
+    x1 := <span class="num">0</span>
+  <span class="kw">od</span>
+<span class="op">[]</span>
+  <span class="kw">do</span> <span class="kw">true</span> <span class="op">→</span>
+    x2 := x1 + <span class="num">1</span> ;
+    <span class="kw">if</span> x1 = <span class="num">0</span> <span class="op">∨</span> x2 &lt; x1 <span class="op">→</span>
+      critical section<sub>2</sub>
+    <span class="kw">fi</span> ;
+    x2 := <span class="num">0</span>
+  <span class="kw">od</span>
+<span class="kw">rap</span></pre>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Identify the Program Graph Nodes</h4>
+        <p>Each process gets its own graph. Here are the nodes for Process 1 (Process 2 is symmetric):</p>
+        <table class="exec-table">
+          <thead><tr><th>Node</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>q₁⊳</td><td>Loop start (ready to take ticket)</td></tr>
+            <tr><td>q₁¹</td><td>After taking ticket: x1 := x2+1</td></tr>
+            <tr><td>q₁²</td><td>Evaluating entry guard: x2=0 ∨ x1&lt;x2</td></tr>
+            <tr><td>q₁³</td><td>IN critical section</td></tr>
+            <tr><td>q₁⁴</td><td>After critical section, about to release ticket</td></tr>
+          </tbody>
+        </table>
+        <p>Process 2 has nodes q₂⊳, q₂¹, q₂², q₂³, q₂⁴ with symmetric actions.</p>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Trace a Safe Interleaving (Correct Behaviour)</h4>
+        <p>Initial configuration: <code>⟨q₁⊳ q₂⊳ ; {x1=0, x2=0}⟩</code></p>
+        <table class="exec-table">
+          <thead>
+            <tr><th>Step</th><th>Action</th><th>Node (P1, P2)</th><th>x1</th><th>x2</th><th>Comment</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>init</td><td>—</td><td>q₁⊳, q₂⊳</td><td>0</td><td>0</td><td>Start state</td></tr>
+            <tr class="highlight"><td>1</td><td>P1: <code>true</code></td><td>q₁¹, q₂⊳</td><td>0</td><td>0</td><td>P1 enters loop</td></tr>
+            <tr><td>2</td><td>P1: <code>x1 := x2+1 = 1</code></td><td>q₁², q₂⊳</td><td>1</td><td>0</td><td>P1 takes ticket #1</td></tr>
+            <tr class="highlight"><td>3</td><td>P2: <code>true</code></td><td>q₁², q₂¹</td><td>1</td><td>0</td><td>P2 enters loop</td></tr>
+            <tr><td>4</td><td>P2: <code>x2 := x1+1 = 2</code></td><td>q₁², q₂²</td><td>1</td><td>2</td><td>P2 takes ticket #2</td></tr>
+            <tr class="good-row"><td>5</td><td>P1: guard <code>x2=0 ∨ x1&lt;x2</code> = <code>false∨(1&lt;2)=true</code></td><td>q₁³, q₂²</td><td>1</td><td>2</td><td>✓ P1 ENTERS critical section (lower ticket)</td></tr>
+            <tr><td>6</td><td>P1: does critical work…</td><td>q₁⁴, q₂²</td><td>1</td><td>2</td><td>P2 still waiting</td></tr>
+            <tr><td>7</td><td>P1: <code>x1 := 0</code></td><td>q₁⊳, q₂²</td><td>0</td><td>2</td><td>P1 releases ticket</td></tr>
+            <tr class="good-row"><td>8</td><td>P2: guard <code>x1=0 ∨ x2&lt;x1</code> = <code>true∨…=true</code></td><td>q₁⊳, q₂³</td><td>0</td><td>2</td><td>✓ P2 ENTERS critical section</td></tr>
+            <tr><td>9</td><td>P2: does critical work…</td><td>q₁⊳, q₂⁴</td><td>0</td><td>2</td><td></td></tr>
+            <tr><td>10</td><td>P2: <code>x2 := 0</code></td><td>q₁⊳, q₂⊳</td><td>0</td><td>0</td><td>Back to start. Safe!</td></tr>
+          </tbody>
+        </table>
+        <div class="box box-good" style="margin-top:12px">
+          <div class="box-title">Observation</div>
+          At no point are both P1 and P2 simultaneously at q₁³ and q₂³. Safety holds. Also, P2 eventually gets in (step 8), so liveness holds.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Trace a Bad Interleaving (Without a Mutex Algorithm)</h4>
+        <p>Suppose we removed the ticket system and both processes just checked a simple shared flag incorrectly. Consider two processes that both do:</p>
+        <pre><span class="kw">do</span> <span class="kw">true</span> <span class="op">→</span>
+  <span class="kw">if</span> crit = <span class="num">0</span> <span class="op">→</span>         <span class="cmt">-- "Is the room free?"</span>
+    crit := <span class="num">1</span> ;          <span class="cmt">-- "I'm going in!"</span>
+    <span class="cmt">// critical section</span>
+    crit := <span class="num">0</span>
+  <span class="kw">fi</span>
+<span class="kw">od</span></pre>
+        <table class="exec-table">
+          <thead><tr><th>Step</th><th>Action</th><th>crit</th><th>Problem</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>P1: reads crit = 0 (guard true)</td><td>0</td><td></td></tr>
+            <tr><td>2</td><td>P2: reads crit = 0 (guard true)</td><td>0</td><td>Before P1 writes!</td></tr>
+            <tr><td>3</td><td>P1: writes crit := 1</td><td>1</td><td></td></tr>
+            <tr class="bad-row"><td>4</td><td>P2: writes crit := 1</td><td>1</td><td>⚠ BOTH now in critical section!</td></tr>
+          </tbody>
+        </table>
+        <p>The window between reading the guard and writing the flag allows both processes to slip through simultaneously. Safety is <em>violated</em>.</p>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>How the Bakery Algorithm Prevents the Bad Interleaving</h4>
+        <ul class="notes-list">
+          <li><strong>Tickets are unique per round:</strong> When P1 sets <code>x1 := x2+1</code>, it reads the <em>current</em> value of x2. Even if both do this almost simultaneously, the ticket values will differ — one will always be strictly larger.</li>
+          <li><strong>The guard is strict:</strong> The condition <code>x1 &lt; x2</code> uses strict inequality. It is mathematically impossible for both <code>x1 &lt; x2</code> and <code>x2 &lt; x1</code> to be true simultaneously.</li>
+          <li><strong>The algorithm handles the corner case:</strong> If x2 = 0 (P2 has no ticket), P1 can freely enter. This prevents P1 from starving when P2 is not interested.</li>
+          <li><strong>Releasing the ticket is atomic:</strong> Setting <code>x1 := 0</code> is one indivisible step. After it, P2's guard immediately becomes true (assuming x2 &gt; 0), so P2 can proceed.</li>
+        </ul>
+        <div class="box box-good">
+          <div class="box-title">Why It Cannot Go Wrong</div>
+          For both processes to be in the critical section, we would need simultaneously: <code>x2=0 ∨ x1&lt;x2</code> (P1's guard) AND <code>x1=0 ∨ x2&lt;x1</code> (P2's guard). If both have nonzero tickets, we need <code>x1&lt;x2</code> AND <code>x2&lt;x1</code> — a contradiction. If one has ticket 0, that means it already exited and set its ticket to 0 — so it isn't in the critical section.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end walkthrough -->
+</section>
+
+<!-- ══════════════════ SECTION 7 ══════════════════ -->
+<section class="section" id="s7">
+  <div class="section-label">Section 7</div>
+  <h2 class="section-title">Exam-Style Tips <span class="star">⭐</span></h2>
+
+  <h3 class="sub-title">Writing Execution Sequences</h3>
+  <div class="exam-tip">
+    <div class="exam-tip-label">Format</div>
+    Always write: <code>⟨nodeP1 nodeP2 ; memory⟩ ─action→ ⟨nodeP1' nodeP2' ; memory'⟩</code>. Label which process acts. Show each step individually — do not skip steps.
+  </div>
+  <ul class="notes-list">
+    <li>Write the full configuration at each step: all process nodes <em>and</em> all relevant variable values.</li>
+    <li>For each step, state which process moves, what edge it takes, and how memory changes.</li>
+    <li>If the action is a guard (boolean), write the guard value and say whether it's true/false.</li>
+    <li>For channel communication: write the joint action <code>c!a?x</code> and which two processes participate.</li>
+  </ul>
+
+  <h3 class="sub-title">Arguing Safety</h3>
+  <div class="exam-tip">
+    <div class="exam-tip-label">Template Answer</div>
+    "We must show that no reachable configuration has both P1 at node q₁³ and P2 at node q₂³ simultaneously. Suppose for contradiction both were at their critical section nodes. Then P1's guard <code>x2=0 ∨ x1&lt;x2</code> was true and P2's guard <code>x1=0 ∨ x2&lt;x1</code> was true. Since both are in the critical section, their ticket values are nonzero. So we need <code>x1&lt;x2</code> AND <code>x2&lt;x1</code> — a contradiction. Hence safety holds."
+  </div>
+
+  <h3 class="sub-title">Arguing Liveness</h3>
+  <div class="exam-tip">
+    <div class="exam-tip-label">Template Answer</div>
+    "We must show that if a process is waiting (stuck at the guard), it will eventually be released. If P1 is stuck at q₁², then <code>x2 ≠ 0 AND x1 ≥ x2</code>. Since P2 is in the critical section with ticket x2, and no process stays in the critical section permanently, P2 will eventually execute <code>x2 := 0</code>. After this, P1's guard becomes true (since x2=0 satisfies <code>x2=0 ∨ x1&lt;x2</code>), so P1 can enter."
+  </div>
+
+  <h3 class="sub-title">Common Exam Phrasings</h3>
+  <ul class="notes-list">
+    <li>"Construct an execution sequence that demonstrates…" — write a concrete trace showing the required behaviour.</li>
+    <li>"Find an execution sequence that violates safety" — look for a trace where both processes reach their critical section simultaneously. Work backwards from that bad state.</li>
+    <li>"Argue that the algorithm guarantees the safety/liveness property" — write a short proof by contradiction (safety) or progress argument (liveness).</li>
+    <li>"Describe the semantics of <code>par C1 [] C2 rap</code>" — mention: n disjoint program graphs, configurations are tuples ⟨q₁ q₂; σ⟩, only one process moves at a time (interleaving), execution steps advance one process node while others stay fixed.</li>
+    <li>"What is a race condition? Give an example." — shared variable read-modify-write split by an interleaving step.</li>
+  </ul>
+
+  <h3 class="sub-title">Key Formal Definitions to Know</h3>
+  <ul class="notes-list">
+    <li><span class="star">⭐</span> <strong>Execution step rule</strong> for shared variables: <code>⟨q₁⋯qᵢ○⋯qₙ; σ⟩ →α ⟨q₁⋯qᵢ●⋯qₙ; σ'⟩</code> whenever <code>(qᵢ○, α, qᵢ●) ∈ Eᵢ</code> and <code>⟦α⟧σ = σ'</code>.</li>
+    <li><span class="star">⭐</span> <strong>Synchronous joint step</strong>: <code>⟨…qᵢ○…qⱼ○…; σ⟩ →c!a?x ⟨…qᵢ●…qⱼ●…; σ'⟩</code> whenever process i has send edge and process j has receive edge on same channel.</li>
+    <li><strong>Asynchronous step</strong>: one process moves; buffer κ is updated (output appends to right, input removes from left).</li>
+    <li><strong>Product Program Graph</strong> (Exercise 8.10): nodes Q₁×Q₂×⋯×Qₙ, same execution sequences as interleaving semantics. Size grows exponentially — this is the <em>state explosion</em> problem.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════ KEY TAKEAWAYS ══════════════════ -->
+<div class="takeaways" id="takeaways">
+  <h2>⭐ Key Takeaways</h2>
+
+  <div class="takeaway-item">
+    <div class="tk-num">1</div>
+    <div class="tk-text">
+      <strong>Concurrency = non-deterministic interleaving.</strong> The <code>par/rap</code> construct in GCL runs <em>n</em> processes "simultaneously." The semantics models this as all possible interleavings — one process moves at a time. This non-determinism is the root of all concurrency bugs.
+    </div>
+  </div>
+
+  <div class="takeaway-item">
+    <div class="tk-num">2</div>
+    <div class="tk-text">
+      <strong>Configurations track all process locations.</strong> A concurrent configuration is <code>⟨q₁ q₂ ⋯ qₙ ; σ⟩</code>. You must write the node of every process and the full memory at every step of an execution sequence.
+    </div>
+  </div>
+
+  <div class="takeaway-item">
+    <div class="tk-num">3</div>
+    <div class="tk-text">
+      <strong>Safety vs. Liveness are distinct properties.</strong> Safety = "nothing bad ever happens" (at most one process in the critical section). Liveness = "something good eventually happens" (a waiting process eventually enters). An algorithm must satisfy both. Arguing them requires different proof strategies.
+    </div>
+  </div>
+
+  <div class="takeaway-item">
+    <div class="tk-num">4</div>
+    <div class="tk-text">
+      <strong>The Bakery Algorithm guarantees both safety and liveness</strong> through the ticket mechanism: tickets ensure a total order, so two processes cannot simultaneously have the "winning" ticket. Safety follows from strict inequality; liveness follows because tickets are always eventually released.
+    </div>
+  </div>
+
+  <div class="takeaway-item">
+    <div class="tk-num">5</div>
+    <div class="tk-text">
+      <strong>Synchronous communication requires joint actions.</strong> In synchronous channel semantics, a send <code>c!a</code> and a matching receive <code>c?x</code> fuse into one joint step <code>c!a?x</code> that advances <em>both</em> processes simultaneously. There is no buffer — this is fundamentally different from asynchronous communication where sender and receiver are decoupled via a queue.
+    </div>
+  </div>
+</div>
+
+</div><!-- end wrapper -->
+</body>
+</html>
