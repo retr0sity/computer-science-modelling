@@ -16,6 +16,7 @@
     --green: #3ec97e;
     --red: #f06070;
     --purple: #b57aff;
+    --orange: #ff8c42;
     --text: #d6dde8;
     --muted: #6b7891;
     --heading: #eef2f8;
@@ -130,6 +131,63 @@
   /* ── CONTAINER ── */
   .container { max-width: 900px; margin: 0 auto; padding: 0 36px; }
 
+  /* ── TOPIC OVERVIEW STRIP ── */
+  .topic-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+  .topic-strip-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 36px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .topic-item {
+    padding: 22px 20px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: background 0.15s;
+  }
+  .topic-item:last-child { border-right: none; }
+  .topic-item:hover { background: rgba(255,255,255,0.02); }
+  .topic-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+  .topic-circle.blue  { background: rgba(79,156,249,0.18); color: #4f9cf9; border: 1.5px solid rgba(79,156,249,0.35); }
+  .topic-circle.green { background: rgba(62,201,126,0.18); color: #3ec97e; border: 1.5px solid rgba(62,201,126,0.35); }
+  .topic-circle.purple{ background: rgba(181,122,255,0.18); color: #b57aff; border: 1.5px solid rgba(181,122,255,0.35); }
+  .topic-circle.orange{ background: rgba(255,140,66,0.18);  color: #ff8c42; border: 1.5px solid rgba(255,140,66,0.35); }
+  .topic-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .topic-meta .topic-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topic-meta .topic-desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
   /* ── SECTION ── */
   .section { padding: 52px 0 20px; }
 
@@ -149,6 +207,29 @@
     margin-bottom: 24px;
     letter-spacing: -0.3px;
     line-height: 1.2;
+  }
+
+  /* ── DIVIDER LABEL ── */
+  .divider-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    margin-top: 8px;
+  }
+  .divider-label span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .divider-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
 
   /* ── CARDS ── */
@@ -186,9 +267,10 @@
   }
   .card:hover::before { opacity: 1; }
 
-  .card.fm { --card-accent: #4f9cf9; }
-  .card.cfl { --card-accent: #3ec97e; }
-  .card.rl { --card-accent: #b57aff; }
+  .card.fm     { --card-accent: #4f9cf9; }
+  .card.cfl    { --card-accent: #3ec97e; }
+  .card.rl     { --card-accent: #b57aff; }
+  .card.exam   { --card-accent: #ff8c42; }
 
   .card::before { background: var(--card-accent); }
   .card:hover { border-color: var(--card-accent); }
@@ -236,6 +318,15 @@
     padding: 3px 8px;
     border-radius: 4px;
   }
+  .card-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--orange);
+    background: rgba(255,140,66,0.1);
+    border: 1px solid rgba(255,140,66,0.25);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
   .card-arrow {
     color: var(--card-accent);
     font-size: 16px;
@@ -272,12 +363,16 @@
     font-family: 'IBM Plex Mono', monospace;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     .hero { padding: 40px 24px 36px; }
     .hero h1 { font-size: 1.8rem; }
     .container { padding: 0 20px; }
     .cards { grid-template-columns: 1fr; }
     footer .inner { flex-direction: column; align-items: flex-start; }
+    .topic-strip-inner { grid-template-columns: repeat(2, 1fr); }
+    .topic-item:nth-child(2) { border-right: none; }
+    .topic-item:nth-child(3) { border-top: 1px solid var(--border); }
+    .topic-item:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
   }
 </style>
 </head>
@@ -290,6 +385,10 @@
     <a href="FM_Study_Notes_02141.html">FM</a>
     <a href="CFL_Study_Notes_02141.html">CFL</a>
     <a href="RL_Study_Notes_02141.html">RL</a>
+    <a href="induction_guide.html">IND</a>
+    <a href="concurrency_study_guide.html">CON</a>
+    <a href="ModelChecking_LTL_Study_Notes_02141.html">LTL</a>
+    <a href="CSM_Exam_Papers.html">EXAM</a>
   </div>
 </nav>
 
@@ -298,12 +397,52 @@
   <div class="container">
     <div class="tag">// Study Hub</div>
     <h1>02141 Study Notes</h1>
-    <p>All course material in one place. Select a topic below to open the corresponding study notes.</p>
+    <p>All course material in one place — notes, guides, and past exam papers. Select a topic below to open the corresponding study notes.</p>
     <div class="hero-pills">
       <span class="pill"><span class="dot" style="background:#4f9cf9"></span>Formal Methods</span>
       <span class="pill"><span class="dot" style="background:#3ec97e"></span>Context-Free Languages</span>
       <span class="pill"><span class="dot" style="background:#b57aff"></span>Regular Languages</span>
+      <span class="pill"><span class="dot" style="background:#ff8c42"></span>Exam Practice</span>
     </div>
+  </div>
+</div>
+
+<!-- TOPIC OVERVIEW STRIP -->
+<div class="topic-strip">
+  <div class="topic-strip-inner">
+
+    <div class="topic-item">
+      <div class="topic-circle blue">FM</div>
+      <div class="topic-meta">
+        <span class="topic-name">Formal Methods</span>
+        <span class="topic-desc">Program graphs, GCL, verification &amp; security</span>
+      </div>
+    </div>
+
+    <div class="topic-item">
+      <div class="topic-circle green">CFL</div>
+      <div class="topic-meta">
+        <span class="topic-name">Context-Free Langs</span>
+        <span class="topic-desc">Grammars, PDAs, parsing &amp; ambiguity</span>
+      </div>
+    </div>
+
+    <div class="topic-item">
+      <div class="topic-circle purple">RL</div>
+      <div class="topic-meta">
+        <span class="topic-name">Regular Languages</span>
+        <span class="topic-desc">DFA/NFA, regex, minimisation &amp; closure</span>
+      </div>
+    </div>
+
+    <div class="topic-item">
+      <div class="topic-circle orange">EX</div>
+      <div class="topic-meta">
+        <span class="topic-name">Past Exams</span>
+        <span class="topic-desc">2018 – 2025 with full solutions</span>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -311,7 +450,9 @@
 <div class="container">
   <div class="section">
     <div class="section-label">// Topics</div>
-    <h2>Choose a Subject</h2>
+    <h2>Study Notes</h2>
+
+    <div class="divider-label"><span>Core Topics</span></div>
 
     <div class="cards">
 
@@ -357,16 +498,21 @@
         </div>
       </a>
 
-            <!-- INDUCTION -->
+    </div>
+
+    <div class="divider-label" style="margin-top:32px;"><span>Supplementary Guides</span></div>
+
+    <div class="cards">
+
+      <!-- INDUCTION -->
       <a class="card fm" href="induction_guide.html">
         <div class="card-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v20"/>
-            <path d="M5 9l7-7 7 7"/>
+            <path d="M12 2v20"/><path d="M5 9l7-7 7 7"/>
           </svg>
           IND
         </div>
-        <h3>Mathematical & Structural Induction</h3>
+        <h3>Mathematical &amp; Structural Induction</h3>
         <p>Integer induction, strong induction, structural induction, and proof-writing templates with worked examples.</p>
         <div class="card-footer">
           <span class="card-tag">02141</span>
@@ -378,8 +524,7 @@
       <a class="card cfl" href="concurrency_study_guide.html">
         <div class="card-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 7l-5 5-5-5"/>
-            <path d="M17 17l-5-5-5 5"/>
+            <path d="M17 7l-5 5-5-5"/><path d="M17 17l-5-5-5 5"/>
           </svg>
           CON
         </div>
@@ -395,12 +540,11 @@
       <a class="card rl" href="ModelChecking_LTL_Study_Notes_02141.html">
         <div class="card-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
           </svg>
           LTL
         </div>
-        <h3>Model Checking & LTL</h3>
+        <h3>Model Checking &amp; LTL</h3>
         <p>Transition systems, temporal logic operators, trace checking, and model checking with LTL formulas.</p>
         <div class="card-footer">
           <span class="card-tag">02141</span>
@@ -409,6 +553,30 @@
       </a>
 
     </div>
+
+    <div class="divider-label" style="margin-top:32px;"><span>Exam Practice</span></div>
+
+    <div class="cards">
+
+      <!-- CSM EXAM PAPERS -->
+      <a class="card exam" href="CSM_Exam_Papers.html">
+        <div class="card-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/>
+          </svg>
+          EXAM
+        </div>
+        <h3>CSM Past Exam Papers</h3>
+        <p>Full exam papers from 2018–2025 with complete solutions. Covers all topics: formal languages, semantics, verification, model checking, and sign analysis.</p>
+        <div class="card-footer">
+          <span class="card-tag">2018–2025</span>
+          <span class="card-badge">⭐ High Priority</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+
   </div>
 </div>
 
